@@ -6,6 +6,8 @@ Implementation of a multi-agent system with group pathfinding objectives.
 
 **Environment**: a 10 m x 10 m field
 
+![Arena](arena.png?raw=true "Arena")
+
 * Five agents (A,B,C,D,E) can move up and down and left and right, one centimeter in every step.
 * For each agent, there are five target objects to collect. For example for agent A the target
 objects are TA1 to TA5.
