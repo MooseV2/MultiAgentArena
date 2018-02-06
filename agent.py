@@ -14,15 +14,20 @@ class Agent(GameObject):
 
   def init_drawing(self, batch):
     self.image = pyglet.resource.image('ball_1.png')
-    self.image.anchor_x = self.image.width // 2
-    self.image.anchor_y = self.image.height // 2
+    self.image.width = 10
+    self.image.height = 10
+    # self.image.anchor_x = self.image.width // 2
+    # self.image.anchor_y = self.image.height // 2
     self.sprite = pyglet.sprite.Sprite(img=self.image, x=self.x, y=self.y, batch=batch)
+    batch.add(4, pyglet.gl.GL_QUADS, None, 
+      ("v2f", (self.x, 100, 150, 100, 150, 150, 100, 150)),
+    )
   
   def update(self):
     self.sprite.x = self.x
     self.sprite.y = self.y
     if self.id != 4:
-      self.x += 1
+      self.x += 10
     nearby = self.get_nearby(GameObject)
     if nearby:
       print(nearby)
