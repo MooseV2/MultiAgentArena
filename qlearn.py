@@ -16,37 +16,73 @@ class Catch(object):
         Ouput: new states and reward
         """
 
+        state = self.state
         if action == 0: #left
-            self.position = self.position[1] -1
+            action = -1
+            axis = 'x'
         elif action == 1: # right
-            self.position = self.position[1] +1
+            action = +1
+            axis = 'x'
         elif action == 2: # up
-            self.position = self.position[0] +1
+            action = +1
+            axis = 'y'
         elif action == 3: # Down
-            self.position = self.position[0] -1
+            action = -1
+            axis = 'y'
         else:
             print("Invalid Action")
+
+
+        x0,y0,count = state[0]
+
+        if axis == 'x':
+            if x0==0 and action == -1 :
+                x0 +=1
+            elif x0 ==self.grid_size and action == 1:
+                x0 -=1
+            elif action == -1:
+                x0 -=1
+            else :
+                x0 +=1
+        if axis == 'y' :
+            if y0==0  and action == -1:
+                y0+=1
+            elif y0 ==self.grid_size and action == 1:
+                y0-=1
+            elif action == -1:
+                y0 -=1
+            else:
+                y0 +=1
+        count +=1
+
+
+        out = np.asarray([x0,y0,count,state[0][0:1]])
+        out = out[np.newaxis]
+        # print (out)
+        # print(out.shape)
+        # assert len(out.shape) == 2
+        self.state = out
+        # print("State: ",self.state)
 
     def _draw_state(self):
         im_size = (self.grid_size,)*2
         state = self.state[0]
         canvas = np.zeros(im_size)
-        canvas[state[0], state[1]] = 1  # draw fruit
-        canvas[-1, state[2]-1:state[2] + 2] = 1  # draw basket
+        canvas[state[0]-1,state[1]-1] = 1  # draw bot
         return canvas
 
     def _get_reward(self):
-        fruit_row, fruit_col, basket = self.state[0]
-        if fruit_row == self.grid_size-1:
-            if abs(fruit_col - basket) <= 1:
-                return 1
-            else:
-                return -1
+        x0,y0,count = self.state[0]
+        if (x0 == self.targets[0] and y0 == self.targets[1]) or (x0 == self.targets[2] and y0 == self.targets[3])  :
+            self.targets[2] -=1
+            return 1
+        elif count < 50:
+            return -0.1
         else:
-            return 0
+            return -0.2
 
     def _is_over(self):
-        if self.state[0, 0] == self.grid_size-1:
+        if self.targets[] == 0 or self.state[0][5] == self.grid_size**2:
             return True
         else:
             return False
@@ -62,9 +98,16 @@ class Catch(object):
         return self.observe(), reward, game_over
 
     def reset(self):
-        n = np.random.randint(0, self.grid_size-1, size=1)
-        m = np.random.randint(1, self.grid_size-2, size=1)
-        self.state = np.asarray([0, n, m])[np.newaxis]
+        x0 = np.random.randint(0, self.grid_size-1, size=1)
+        y0 = np.random.randint(0, self.grid_size-1, size=1)
+        targ1x = np.random.randint(0, self.grid_size-1, size=1)
+        targ1y = np.random.randint(0, self.grid_size-1, size=1)
+        targ2x = np.random.randint(0, self.grid_size-1, size=1)
+        targ2y = np.random.randint(0, self.grid_size-1, size=1)
+        # print("targ1",targ1x,targ1y)
+        self.targets = [targ1x,targ1y,targ1x,targ1y,2]
+
+        self.state = np.asarray([x0, y0,0])[np.newaxis]
 
 
 class ExperienceReplay(object):
@@ -106,11 +149,11 @@ class ExperienceReplay(object):
 if __name__ == "__main__":
     # parameters
     epsilon = .1  # exploration
-    num_actions = 3  # [move_left, stay, move_right]
+    num_actions = 4  # [move_left, stay, move_right]
     epoch = 1000
     max_memory = 500
     hidden_size = 100
-    batch_size = 50
+    batch_size = 300
     grid_size = 10
 
     model = Sequential()
@@ -138,6 +181,7 @@ if __name__ == "__main__":
         input_t = env.observe()
 
         while not game_over:
+            _epsilon = _epsilon*(epsilon/len(epoch))
             input_tm1 = input_t
             # get next action
             if np.random.rand() <= epsilon:
@@ -157,7 +201,7 @@ if __name__ == "__main__":
             # adapt model
             inputs, targets = exp_replay.get_batch(model, batch_size=batch_size)
 
-            loss += model.train_on_batch(inputs, targets)[0]
+            loss += model.train_on_batch(inputs, targets)
         print("Epoch {:03d}/999 | Loss {:.4f} | Win count {}".format(e, loss, win_cnt))
 
     # Save trained model weights and architecture, this will be used by the visualization code
