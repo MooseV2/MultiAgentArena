@@ -18,7 +18,7 @@ class GameObject:
           yield obj
       else:
         dead.add(ref)
-    # cls._instances -= dead
+    cls._instances -= dead
 
   def __repr__(self):
     return f'<{self.__class__.__name__} {self.id}>'
