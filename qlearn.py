@@ -10,13 +10,30 @@ class Catch(object):
         self.grid_size = grid_size
         self.reset()
 
+
+    def _get_Current(self):
+        x = self.state[0][1]
+        y = self.state[0][2]
+
+        return [x,y]
+
     def _update_state(self, action):
         """
         Input: action and states
         Ouput: new states and reward
         """
+        # print("Action: ", action)
 
         state = self.state
+
+        #Update move counter
+        count = state[0][0]
+        count +=1
+
+        #Current Position
+        pos = self._get_Current()
+
+
         if action == 0: #left
             action = -1
             axis = 'x'
@@ -33,56 +50,79 @@ class Catch(object):
             print("Invalid Action")
 
 
-        x0,y0,count = state[0]
+        # print("pos :",pos)
+        # print("state entering :",state)
 
         if axis == 'x':
-            if x0==0 and action == -1 :
-                x0 +=1
-            elif x0 ==self.grid_size and action == 1:
-                x0 -=1
+            if pos[0]==0 and action == -1 :
+                pos[0] +=1
+            elif pos[0] ==self.grid_size-1 and action == 1:
+                pos[0] -=1
             elif action == -1:
-                x0 -=1
+                pos[0] -=1
             else :
-                x0 +=1
+                pos[0] +=1
         if axis == 'y' :
-            if y0==0  and action == -1:
-                y0+=1
-            elif y0 ==self.grid_size and action == 1:
-                y0-=1
+            if pos[1]==0  and action == -1:
+                pos[1]+=1
+            elif pos[1] ==self.grid_size-1 and action == 1:
+                pos[1]-=1
             elif action == -1:
-                y0 -=1
+                pos[1] -=1
             else:
-                y0 +=1
-        count +=1
+                pos[1] +=1
 
 
-        out = np.asarray([x0,y0,count,state[0][0:1]])
-        out = out[np.newaxis]
+        # print("pos :",pos)
+
+        out = self.state[0]
+        # print("Self.state :",out)
+
+        out[0] = count
+        out =np.insert(out,1,pos[1])
+        out = np.insert(out,1,pos[0])
+
+
+        out = np.asarray([out])
+        # print (out)
+        # self.state[0] =
+        # out = out[np.newaxis]
         # print (out)
         # print(out.shape)
         # assert len(out.shape) == 2
         self.state = out
-        # print("State: ",self.state)
+        # print("State leaving: ",self.state)
 
     def _draw_state(self):
         im_size = (self.grid_size,)*2
-        state = self.state[0]
+        points = self.state[0][0]+1
+        state = self.state[0][1:]
         canvas = np.zeros(im_size)
-        canvas[state[0]-1,state[1]-1] = 1  # draw bot
+
+        for count, val in enumerate(state):
+            if (count%2==0):
+                canvas[val,state[count+1]] = 1
+
+
+        # canvas[state[0]-1,state[1]-1] = 1  # draw bot
         return canvas
 
     def _get_reward(self):
-        x0,y0,count = self.state[0]
+        count = self.state[0][0]
+        x0,y0 = self.state[0][1:3]
         if (x0 == self.targets[0] and y0 == self.targets[1]) or (x0 == self.targets[2] and y0 == self.targets[3])  :
-            self.targets[2] -=1
+            print ("Found a target")
+            self.targets[4] -=1
             return 1
+
+        # elif
         elif count < 50:
-            return -0.1
+            return 0.01
         else:
-            return -0.2
+            return -0.02
 
     def _is_over(self):
-        if self.targets[] == 0 or self.state[0][5] == self.grid_size**2:
+        if self.targets[4] == 0 or self.state[0][0] >= 150:
             return True
         else:
             return False
@@ -105,9 +145,9 @@ class Catch(object):
         targ2x = np.random.randint(0, self.grid_size-1, size=1)
         targ2y = np.random.randint(0, self.grid_size-1, size=1)
         # print("targ1",targ1x,targ1y)
-        self.targets = [targ1x,targ1y,targ1x,targ1y,2]
+        self.targets = [targ1x,targ1y,targ2x,targ2y,1]
 
-        self.state = np.asarray([x0, y0,0])[np.newaxis]
+        self.state = np.asarray([1,x0,y0])[np.newaxis]
 
 
 class ExperienceReplay(object):
@@ -148,12 +188,13 @@ class ExperienceReplay(object):
 
 if __name__ == "__main__":
     # parameters
-    epsilon = .1  # exploration
+    epsilon = .5  # exploration
+    _epsilon = epsilon
     num_actions = 4  # [move_left, stay, move_right]
     epoch = 1000
     max_memory = 500
     hidden_size = 100
-    batch_size = 300
+    batch_size = 100
     grid_size = 10
 
     model = Sequential()
@@ -179,12 +220,14 @@ if __name__ == "__main__":
         game_over = False
         # get initial input
         input_t = env.observe()
+        _epsilon = _epsilon-(epsilon/epoch)
 
         while not game_over:
-            _epsilon = _epsilon*(epsilon/len(epoch))
+
             input_tm1 = input_t
             # get next action
-            if np.random.rand() <= epsilon:
+            if np.random.rand() <= _epsilon:
+
                 action = np.random.randint(0, num_actions, size=1)
             else:
                 q = model.predict(input_tm1)
