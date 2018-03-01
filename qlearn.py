@@ -111,7 +111,7 @@ class Catch(object):
         count = self.state[0][0]
         x0,y0 = self.state[0][1:3]
         if (x0 == self.targets[0] and y0 == self.targets[1]) or (x0 == self.targets[2] and y0 == self.targets[3])  :
-            print ("Found a target")
+            print ("Found a target in {} moves".format(count))
             self.targets[4] -=1
             return 1
 
@@ -122,7 +122,7 @@ class Catch(object):
             return -0.02
 
     def _is_over(self):
-        if self.targets[4] == 0 or self.state[0][0] >= 150:
+        if self.targets[4] == 0 or self.state[0][0] >= 250:
             return True
         else:
             return False
@@ -196,6 +196,7 @@ if __name__ == "__main__":
     hidden_size = 100
     batch_size = 100
     grid_size = 10
+    decay = 0.01
 
     model = Sequential()
     model.add(Dense(hidden_size, input_shape=(grid_size**2,), activation='relu'))
@@ -220,7 +221,8 @@ if __name__ == "__main__":
         game_over = False
         # get initial input
         input_t = env.observe()
-        _epsilon = _epsilon-(epsilon/epoch)
+        # _epsilon = _epsilon-(epsilon/epoch) # linear
+        _epsilon = epsilon*pow(1-decay,e) # exponential
 
         while not game_over:
 
@@ -247,7 +249,9 @@ if __name__ == "__main__":
             loss += model.train_on_batch(inputs, targets)
         print("Epoch {:03d}/999 | Loss {:.4f} | Win count {}".format(e, loss, win_cnt))
 
-    # Save trained model weights and architecture, this will be used by the visualization code
-    model.save_weights("model.h5", overwrite=True)
-    with open("model.json", "w") as outfile:
-        json.dump(model.to_json(), outfile)
+        # Save trained model weights and architecture, this will be used by the visualization code
+        if (e%100 ==0):
+            modelname = "model"+str(e)
+            model.save_weights(modelname+".h5", overwrite=True)
+            with open(modelname+".json", "w") as outfile:
+                json.dump(model.to_json(), outfile)
