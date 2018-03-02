@@ -2,7 +2,7 @@ import json
 import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Dense
-from keras.optimizers import sgd
+from keras.optimizers import sgd, Adam
 
 
 class Catch(object):
@@ -12,8 +12,8 @@ class Catch(object):
 
 
     def _get_Current(self):
-        x = self.state[0][1]
-        y = self.state[0][2]
+        x = self.state[0][0]
+        y = self.state[0][1]
 
         return [x,y]
 
@@ -23,16 +23,17 @@ class Catch(object):
         Ouput: new states and reward
         """
         # print("Action: ", action)
-
+        # print("State: ",self.state)
         state = self.state
 
         #Update move counter
-        count = state[0][0]
-        count +=1
+        # count = state[0][0]
+        # count +=1
 
         #Current Position
         pos = self._get_Current()
 
+        # print(pos)
 
         if action == 0: #left
             action = -1
@@ -72,57 +73,44 @@ class Catch(object):
             else:
                 pos[1] +=1
 
-
         # print("pos :",pos)
 
-        out = self.state[0]
+        out = self.state
         # print("Self.state :",out)
 
-        out[0] = count
-        out =np.insert(out,1,pos[1])
-        out = np.insert(out,1,pos[0])
+        out = np.insert(out,0,pos)
 
-
-        out = np.asarray([out])
-        # print (out)
-        # self.state[0] =
-        # out = out[np.newaxis]
-        # print (out)
-        # print(out.shape)
-        # assert len(out.shape) == 2
-        self.state = out
+        self.state = np.reshape(out, (int(len(out)/2),2))
         # print("State leaving: ",self.state)
 
     def _draw_state(self):
         im_size = (self.grid_size,)*2
-        points = self.state[0][0]+1
-        state = self.state[0][1:]
+        # points = self.state[0][0]+1
+        state = self.state
         canvas = np.zeros(im_size)
 
-        for count, val in enumerate(state):
-            if (count%2==0):
-                canvas[val,state[count+1]] = 1
+        for pos in state:
+            # print(pos)
+            canvas[pos[0],pos[1]] = 1
 
 
         # canvas[state[0]-1,state[1]-1] = 1  # draw bot
         return canvas
 
     def _get_reward(self):
-        count = self.state[0][0]
-        x0,y0 = self.state[0][1:3]
-        if (x0 == self.targets[0] and y0 == self.targets[1]) or (x0 == self.targets[2] and y0 == self.targets[3])  :
+        count = len(self.state)
+        pos = self.state[0]
+        if (pos[0] == self.targets[0] and pos[1] == self.targets[1]) or (pos[0] == self.targets[2] and pos[1] == self.targets[3])  :
             print ("Found a target in {} moves".format(count))
             self.targets[4] -=1
             return 1
-
-        # elif
-        elif count < 50:
-            return 0.01
+        elif ([pos[0],pos[1]] in pos ):
+            return -1
         else:
-            return -0.02
+            return 0.01
 
     def _is_over(self):
-        if self.targets[4] == 0 or self.state[0][0] >= 250:
+        if self.targets[4] == 0 or len(self.state) >= 250:
             return True
         else:
             return False
@@ -146,8 +134,10 @@ class Catch(object):
         targ2y = np.random.randint(0, self.grid_size-1, size=1)
         # print("targ1",targ1x,targ1y)
         self.targets = [targ1x,targ1y,targ2x,targ2y,1]
-
-        self.state = np.asarray([1,x0,y0])[np.newaxis]
+        i = [x0,y0]
+        # print(i)
+        self.state = np.asarray(i).T
+        # print (self.state)
 
 
 class ExperienceReplay(object):
@@ -188,7 +178,7 @@ class ExperienceReplay(object):
 
 if __name__ == "__main__":
     # parameters
-    epsilon = .5  # exploration
+    epsilon = 1  # exploration
     _epsilon = epsilon
     num_actions = 4  # [move_left, stay, move_right]
     epoch = 1000
@@ -202,7 +192,9 @@ if __name__ == "__main__":
     model.add(Dense(hidden_size, input_shape=(grid_size**2,), activation='relu'))
     model.add(Dense(hidden_size, activation='relu'))
     model.add(Dense(num_actions))
-    model.compile(sgd(lr=.2), "mse")
+    # model.compile(sgd(lr=.2), "mse")
+    model.compile(Adam(lr=0.001, beta_1=0.9, beta_2=0.999,
+     epsilon=1e-08, decay=0.0), "mse")
 
     # If you want to continue training from a previous model, just uncomment the line bellow
     # model.load_weights("model.h5")
@@ -247,7 +239,7 @@ if __name__ == "__main__":
             inputs, targets = exp_replay.get_batch(model, batch_size=batch_size)
 
             loss += model.train_on_batch(inputs, targets)
-        print("Epoch {:03d}/999 | Loss {:.4f} | Win count {}".format(e, loss, win_cnt))
+        print("Epoch {:03d}/1000 | Loss {:.4f} | Win count {} | Win/loose Ratio {:03f}".format(e+1, loss, win_cnt,win_cnt/(e+1)))
 
         # Save trained model weights and architecture, this will be used by the visualization code
         if (e%100 ==0):
