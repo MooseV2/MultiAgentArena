@@ -1,23 +1,16 @@
 import weakref
 from math import hypot
 from gameobject import GameObject
-import pyglet
+import json
 
 class Target(GameObject):
-  def __init__(self, position=(0,0), batch=None):  
+  def __init__(self, data_channel, position=(0,0), batch=None):  
     self.x, self.y = position
-    self.init_drawing(batch)
     super().__init__()
+    data = json.dumps({'cmd':'create', 'type': 'Target', 'id': self.id, 'args':{'x': self.x, 'y': self.y}})
+    data_channel.send(data)
 
-  def init_drawing(self, batch):
-    self.image = pyglet.resource.image('ball_5.png')
-    self.image.anchor_x = self.image.width // 2
-    self.image.anchor_y = self.image.height // 2
-    self.sprite = pyglet.sprite.Sprite(img=self.image, x=self.x, y=self.y, batch=batch)
-  
   def update(self):
-    self.sprite.x = self.x
-    self.sprite.y = self.y
     nearby = self.get_nearby()
     if nearby:
       print(nearby)
