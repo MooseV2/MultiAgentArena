@@ -2,66 +2,12 @@ let distance = (x0, y0, x1, y1) => {
   return Math.sqrt(Math.pow(y1-y0, 2) + Math.pow(x1-x0, 2));
 }
 
-
-class Grid {
-  constructor(w, h) {
-    this.w = w;
-    this.h = h;
-  }
-  
-  draw() {
-    for (let x=0; x<displayWidth; x+=this.w)
-      line(x, 0, x, displayHeight);
-    
-    for (let y=0; y<displayHeight; y+=this.h)
-      line(0, y, displayWidth, y);
-  }
-}
-
-class Agent {
-  constructor(id, {x = 0, y = 0, r = 10, colorID = ColorWheel.colorAssignment}) {
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.colorID = colorID;
-    this.id = id;
-  }
-
-  draw() {
-    fill(ColorWheel.color(this.colorID));
-    ellipseMode(CENTER);
-    ellipse(this.x, this.y, this.r)
-    noFill();
-    if (distance(mouseX, mouseY, this.x, this.y) < 15) {
-      ellipse(this.x, this.y, this.r*10);
-      fill(0, 0, 0);
-      text(`ID: ${this.id}\nX: ${this.x}\nY: ${this.y}`, this.x, this.y - 30);
-    }
-  }
-};
-
-class Target {
-  constructor(id, {x = 0, y = 0, r = 10, colorID = ColorWheel.colorAssignment}) {
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.id = id;
-    this.colorID = colorID;
-  }
-
-  draw() {
-    fill(ColorWheel.color(this.colorID));
-    ellipseMode(CENTER);
-    rect(this.x - this.r/2, this.y+this.r/2, this.r, this.r);
-    noFill();
-    if (distance(mouseX, mouseY, this.x, this.y) < 15) {
-      ellipse(this.x, this.y, this.r*10);
-    }
-  }
-};
-
 var objects;
 let c;
+// Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
+let scale_unit = 10;
+// Reset button
+let reset_button;
 
 let ColorWheel;
 let setupColors = () => {
@@ -79,28 +25,35 @@ let setupColors = () => {
 
 function objectSetup() {
   objects = [];
-  objects[0] = new Grid(20, 20);
+  objects[0] = new Grid(scale_unit, scale_unit);
 }
 
 function setup() {
   document.querySelector('#conn-status').innerHTML = 'Disconnected';
-  createCanvas(720, 400);
+  createCanvas(scale_unit*100, scale_unit*100);
   objectSetup();
   ws = new WebSocketClient(parseCommand);
   setupColors();
-  
+  reset_button = createButton('Reset');
 }
+
 function draw() {
   background(255);
   for (let instance of objects) {
     if (instance)
       instance.draw();
   }
+
+  reset_button.mousePressed(testButton);
+}
+
+function testButton() {
+  createDiv("Reset made this");
 }
 
 // reset board when mouse is pressed
 function mousePressed() {
-  
+
 }
 
 function parseCommand(data) {
