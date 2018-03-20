@@ -23,10 +23,18 @@ class Catch(object):
     def _get_overlap(self):
         return self.overlap
 
+    def _check_overlap(self):
+        for point in self.state[1:-1]:
+            # print("Point :",point)
+            if point[0] == self.state[0][0] and point[1] ==self.state[0][1]:
+                return True
+            else:
+                pass
+        return False
+
     def valid_actions(self):
 
         actions = [0,1,2,3]
-
         pos = self._get_Current()
         if pos[0] == 0:
             actions.remove(0)
@@ -38,8 +46,6 @@ class Catch(object):
             actions.remove(2)
 
         return actions
-
-
 
     def _update_state(self, action):
         """
@@ -78,10 +84,6 @@ class Catch(object):
         # else:
         #     print("Invalid Action")
 
-
-
-
-
         if axis == 'x':
             if pos[0]==0 and action == -1 :
                 # pos[0] +=1
@@ -105,8 +107,6 @@ class Catch(object):
             else:
                 pos[1] +=1
 
-        # print("pos :",pos)
-
         out = self.state
         out = np.insert(out,0,pos)
 
@@ -125,22 +125,24 @@ class Catch(object):
             else:
                 canvas[pos[0],pos[1]] = 0.5
 
-        canvas[points[1],points[2]] = 0.1
+        # canvas[points[1],points[2]] = 0.1
         return canvas
 
     def _get_reward(self):
         count = len(self.state)
         pos = self.state[0]
+        # print("POS :",pos)
+        # print("POS /",self.state[1:-1])
+        # print(np.intersect1d([pos],[self.state[1:-1]]))
         if (pos[0] == self.targets[1] and pos[1] == self.targets[2]):# or (pos[0] == self.targets[2] and pos[1] == self.targets[3])  :
             print ("Found a target in {} moves".format(count))
             self.targets[0] -=1
             return 1
-        elif ([pos[0],pos[1]] in pos ):
+        elif (self._check_overlap()):
             self._overlap()
-            # print("On my tail")
-            return -0.05
+            return -1
         else:
-            return 0.001
+            return 1
 
     def _is_over(self):
         if self.targets[0] == 0: #or len(self.state) >= 250:
@@ -175,7 +177,7 @@ class Catch(object):
 
 
 class ExperienceReplay(object):
-    def __init__(self, max_memory=100, discount=.9):
+    def __init__(self, max_memory=100, discount=0.9):
         self.max_memory = max_memory
         self.memory = list()
         self.discount = discount
@@ -215,11 +217,11 @@ if __name__ == "__main__":
     metrics = []
     moves=0
     # parameters
-    epsilon = 0.8  # exploration
+    epsilon = 0.4  # exploration
     _epsilon = epsilon
     num_actions = 4  # [move_left, stay, move_right]
     epoch = 1000
-    max_memory = 500
+    max_memory = 5000
     hidden_size = 100
     batch_size = 100
     grid_size = 10
@@ -232,7 +234,7 @@ if __name__ == "__main__":
     model.add(PReLU())
     model.add(Dense(num_actions))
     # model.compile(sgd(lr=0.001), "mse")
-    model.compile(Adam(lr=0.01, beta_1=0.9, beta_2=0.999,
+    model.compile(Adam(lr=0.001, beta_1=0.9, beta_2=0.999,
     epsilon=1e-08, decay=0.0), "mse")
 
     # If you want to continue training from a previous model, just uncomment the line bellow
@@ -285,7 +287,7 @@ if __name__ == "__main__":
             inputs, targets = exp_replay.get_batch(model, batch_size=batch_size)
 
             loss += model.train_on_batch(inputs, targets)
-        print("Epoch {:03d}/1000 | Loss {:.4f} | ".format(e+1, loss, ))
+        print("Epoch {:03d}/1000 | Loss {:.4f} | Overlap {:04d} | Wasted Moves {:.4f}".format(e+1, loss, env._get_overlap(),env._get_overlap()/moves ))
 
         metrics.append([e+1, loss, moves, env._get_overlap()])
         # print (metrics)

@@ -9,10 +9,10 @@ if __name__ == "__main__":
     # Make sure this grid size matches the value used fro training
     grid_size = 10
 
-    with open("model/model100.json", "r") as jfile:
+    with open("model/model900.json", "r") as jfile:
         model = model_from_json(json.load(jfile))
-    model.load_weights("model/model100.h5")
-    model.compile("sgd", "mse")
+    model.load_weights("model/model900.h5")
+    model.compile("Adam", "mse")
 
     # Define environment, game
     env = Catch(grid_size)
@@ -33,9 +33,13 @@ if __name__ == "__main__":
 
             # get next action
             q = model.predict(input_tm1)
+            # print(q)
             action = np.argmax(q[0])
+            # action = np.random.choice(env.valid_actions())
 
-            if action not in env.valid_actions(): break
+
+            # print(action)
+
             # apply action, get rewards and new state
             input_t, reward, game_over = env.act(action)
 
