@@ -1,16 +1,36 @@
-<html>
+<!DOCTYPE html>
   <head>
-    <style> body{padding:0; margin:40px;} </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <style> body{padding:0; margin:40px;} </style> -->
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <!-- "Javascript Files for the P5 Library" -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script> -->
+    <!-- Websocket Files for Python communication -->
     <script src="reconnecting-websocket.js"></script>
     <script src="websocket.js"></script>
+    <!-- P5 Sketch Files -->
     <script src="Grid.js"></script>
     <script src="Agent.js"></script>
     <script src="Target.js"></script>
     <script src="index.js"></script>
   </head>
   <body>
-  <div id="conn-status">Not connected</div>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">
+          Hello World
+        </h1>
+        <p class="subtitle">
+          My first website with <strong>Bulma</strong>!
+        </p>
+      </div>
+    </section>
+    <section>
+      <div id="conn-status">Not connected</div>
+      <div id="sketch_wrapper"></div>
+    </section>
   </body>
 </html>

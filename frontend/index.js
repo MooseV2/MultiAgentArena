@@ -5,7 +5,7 @@ let distance = (x0, y0, x1, y1) => {
 var objects;
 let c;
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
-let scale_unit = 10;
+let scale_unit = 8;
 // Reset button
 let reset_button;
 
@@ -30,7 +30,8 @@ function objectSetup() {
 
 function setup() {
   document.querySelector('#conn-status').innerHTML = 'Disconnected';
-  createCanvas(scale_unit*100, scale_unit*100);
+  let canvas = createCanvas(scale_unit*100, scale_unit*100);
+  canvas.parent("sketch_wrapper")
   objectSetup();
   ws = new WebSocketClient(parseCommand);
   setupColors();
