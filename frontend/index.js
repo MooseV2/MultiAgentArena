@@ -5,7 +5,7 @@ let distance = (x0, y0, x1, y1) => {
 var objects;
 let c;
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
-let scale_unit = 8;
+let scale_unit = 6;
 // Reset button
 let reset_button;
 
@@ -35,7 +35,6 @@ function setup() {
   objectSetup();
   ws = new WebSocketClient(parseCommand);
   setupColors();
-  reset_button = createButton('Reset');
 }
 
 function draw() {
@@ -44,13 +43,8 @@ function draw() {
     if (instance)
       instance.draw();
   }
-
-  reset_button.mousePressed(testButton);
 }
 
-function testButton() {
-  createDiv("Reset made this");
-}
 
 // reset board when mouse is pressed
 function mousePressed() {

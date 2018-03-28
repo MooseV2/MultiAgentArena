@@ -1,10 +1,7 @@
-#sketch_wrapper {
-  margin: 0;
-  display: flex;
+.button-panel {
+  background-color: #feca57; 
+}
 
-  /* This centers our sketch horizontally. */
-  justify-content: center;
-
-  /* This centers our sketch vertically. */
-  align-items: center;
+#conn-status {
+  margin-bottom: 20px;
 }
