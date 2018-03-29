@@ -25,20 +25,23 @@ class Agent {
 
     if(verbose) {
       stroke(this.colour)
+      fill("#333")
       text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30)
       noFill()
       fill(this.colour_alpha)
       ellipse(this.x, this.y, this.vision);
     }
 
-    if(this.frame_counter % frame_rate == 0){
+    if(this.frame_counter % frame_rate == 0 && trail){
       this.vision_trail.fill(this.colour_alpha)
       this.vision_trail.noStroke()
       this.vision_trail.ellipseMode(CENTER)
       this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
+      tint(255, 25)
     }
     imageMode(CORNER)
     image(this.vision_trail, 0, 0, 600, 600)
+    noTint()
 
     this.generate_noise()
   }

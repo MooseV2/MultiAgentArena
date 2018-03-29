@@ -7,6 +7,7 @@ let targets
 const colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
 let pause = false
+let trail = false;
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
 const scale_unit = 6
@@ -47,9 +48,13 @@ function DOMSetup() {
   let Pause_Button = createSpan("Pause")
   Pause_Button.parent('#pause').addClass("button is-info is-medium").mousePressed(toggle_pause)
 
+  // Trail Button
+  let Trail_Button = createSpan("Trail On")
+  Trail_Button.parent('#trail').addClass("button is-link is-medium").mousePressed(toggle_trail)
+
   // Details Button
   let Detail_Button = createSpan("Details")
-  Detail_Button.parent('#details').addClass("button is-danger is-medium").mousePressed(toggle_verbose)
+  Detail_Button.parent('#details').addClass("button is-primary is-medium").mousePressed(toggle_verbose)
 
   // Agent Info
   let Agent_Title = createP("Agent #1")
@@ -65,7 +70,10 @@ function DOMSetup() {
   Agent_Targets_Found.parent('#agent-info').addClass("is-size-6")
 
   DOM_objects = Object.assign({
+    "Reset" : Reset_Button,
+    "Pause": Pause_Button,
     "Detail": Detail_Button, 
+    "Trail": Trail_Button,
     "Agent": {
       "Title": Agent_Title,
       "X": Agent_X_Position,
@@ -91,11 +99,16 @@ function toggle_verbose() {
 
 function toggle_pause() {
   pause = pause ? false : true
-
+  DOM_objects.Pause.html(`${pause ? "Resume" : "Pause"}`)
   if(pause)
     noLoop()
   else
     loop()
+}
+
+function toggle_trail() {
+  trail = trail ? false : true
+  DOM_objects.Trail.html(`Trail ${!trail ? "On" : "Off"}`)
 }
 
 function setup() {
