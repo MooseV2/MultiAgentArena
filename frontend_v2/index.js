@@ -4,7 +4,7 @@ let Agent_Buttons
 let agents
 let targets
 let colours = ["#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb", "#1dd1a1"]
-let verbose = false
+let verbose = true
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
 let scale_unit = 6;
@@ -12,22 +12,23 @@ let scale_unit = 6;
 function objectSetup() {
   objects = []
 
-  agents = new Array(5)
-  targets = new Array(5)
+  objects[0] = new Grid(scale_unit, scale_unit)
+
+  agents = new Array()
+  targets = new Array()
 
   for(let i = 0; i < 5; i++)
     agents[i] = new Agent(i, int(random(scale_unit*100)), int(random(scale_unit*100)))
   
+  objects = objects.concat(agents)
+
   for(let i = 0; i < 5; i++){
-    agent_targets = new Array(5)
+    agent_targets = new Array()
     for(let j = 0; j < 5; j++)
       agent_targets[j] = new Target(i, int(random(scale_unit*100)), int(random(scale_unit*100)))
-    
-    targets = targets.concat(agent_targets)
+    targets = targets.concat([agent_targets])
+    objects = objects.concat(agent_targets)
   }
-
-  objects[0] = new Grid(scale_unit, scale_unit)
-  objects = objects.concat(agents, targets)
 }
 
 function DOMSetup() {
@@ -84,12 +85,20 @@ function setup() {
 
   // Set DOM elements
   DOMSetup()
+  // noLoop()
 }
 
 function draw() {
   background(255);
+  stroke("#333")
+  rect(42,42,558,558)
+  noStroke()
   for (let instance of objects) {
     if (instance)
       instance.draw()
   }
+
+  agents.map((agent) => {
+    agent.check_target(targets[agent.id])
+  })
 }
