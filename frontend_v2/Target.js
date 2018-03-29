@@ -17,4 +17,9 @@ class Target {
       ellipse(this.x, this.y, this.r*10);
     }
   }
+
+  display_info(){
+    stroke(this.colour)
+    text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30);
+  }
 }

@@ -3,7 +3,7 @@ class Agent {
     this.x = x
     this.y = y
     this.r = r*scale_unit
-    this.vision = this.r*10
+    this.vision = this.r*10*2
     this.colour = colours[id]
     this.id = id
     this.targets_found = []
@@ -19,9 +19,9 @@ class Agent {
 
     if(verbose) {
       stroke(this.colour)
+      text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30);
       noFill()
       ellipse(this.x, this.y, this.vision);
-      text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30);
     }
     this.generate_noise()
   }
@@ -49,9 +49,7 @@ class Agent {
 
   check_target(agent_targets){
     agent_targets.map((target) => {
-      if(dist(target.x, target.y, this.x, this.y) <= this.vision){
-        console.log(dist(target.x, target.y, this.x, this.y))
-        noLoop()
+      if(dist(target.x, target.y, this.x, this.y) <= this.vision/2){
         remove_from_array(targets[this.id], target)
         remove_from_array(objects, target)
       }
