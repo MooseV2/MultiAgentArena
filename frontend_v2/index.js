@@ -2,6 +2,7 @@ let objects
 let DOM_objects
 let Agent_Buttons
 let agents
+let current_agent_info
 let targets
 let colours = ["#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb", "#1dd1a1"]
 let verbose = true
@@ -25,7 +26,7 @@ function objectSetup() {
   for(let i = 0; i < 5; i++){
     agent_targets = new Array()
     for(let j = 0; j < 5; j++)
-      agent_targets[j] = new Target(i, int(random(scale_unit*100)), int(random(scale_unit*100)))
+      agent_targets[j] = new Target(i, j, int(random(scale_unit*100)), int(random(scale_unit*100)))
     targets = targets.concat([agent_targets])
     objects = objects.concat(agent_targets)
   }
@@ -68,6 +69,8 @@ function DOMSetup() {
     Agent_Buttons[i] = createSpan(`Agent #${i + 1}`)
     Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-info is-medium").mousePressed(agents[i].display_info.bind(agents[i]))
   }
+
+  current_agent_info = agents[0]
 }
 
 function toggle_verbose() {
@@ -97,6 +100,8 @@ function draw() {
     if (instance)
       instance.draw()
   }
+
+  current_agent_info.display_info()
 
   agents.map((agent) => {
     agent.check_target(targets[agent.id])

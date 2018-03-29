@@ -6,7 +6,7 @@ class Agent {
     this.vision = this.r*10*2
     this.colour = colours[id]
     this.id = id
-    this.targets_found = []
+    this.targets_found = ["_", "_", "_", "_", "_"]
     this.xoff = random(100000)
     this.yoff = random(100000)
   }
@@ -27,15 +27,16 @@ class Agent {
   }
 
   display_info(){
+    current_agent_info = this
     let title_span = DOM_objects.Agent.Title
     let x_pos_span = DOM_objects.Agent.X
     let y_pos_span = DOM_objects.Agent.Y
     let targets_found_span = DOM_objects.Agent.Targets_Found
 
     title_span.html(`Agent #${this.id + 1}`)
-    x_pos_span.html(`x: ${this.x}`)
-    y_pos_span.html(`y: ${this.y}`)
-    targets_found_span.html(`Targets: [_,_,_,_,_]`)
+    x_pos_span.html(`x: ${int(this.x)}`)
+    y_pos_span.html(`y: ${int(this.y)}`)
+    targets_found_span.html(`Targets: [${this.targets_found.toString()}]`)
   }
 
   // Agent movement range is from (42, 42) => (558, 558)
@@ -50,9 +51,15 @@ class Agent {
   check_target(agent_targets){
     agent_targets.map((target) => {
       if(dist(target.x, target.y, this.x, this.y) <= this.vision/2){
+        this.target_found(target)
         remove_from_array(targets[this.id], target)
         remove_from_array(objects, target)
       }
     })
+  }
+
+  target_found(target){
+    let index = this.targets_found.indexOf('_')
+    this.targets_found[index] = target.target_id + 1
   }
 }

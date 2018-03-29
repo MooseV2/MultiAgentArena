@@ -1,10 +1,11 @@
 class Target {
-  constructor(id, x = 0, y = 0, r = 1) {
-    this.x = x;
-    this.y = y;
-    this.r = r*scale_unit;
-    this.id = id;
-    this.colour = colours[id];
+  constructor(id, target_id, x = 0, y = 0, r = 1) {
+    this.x = x
+    this.y = y
+    this.r = r*scale_unit
+    this.id = id
+    this.colour = colours[id]
+    this.target_id = target_id
   }
 
   draw() {
