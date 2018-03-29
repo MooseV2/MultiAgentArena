@@ -4,11 +4,14 @@ let Agent_Buttons
 let agents
 let current_agent_info
 let targets
-let colours = ["#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb", "#1dd1a1"]
+let colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
-let scale_unit = 6;
+let scale_unit = 6
+
+// Frame Rate
+let frame_rate = 30
 
 function objectSetup() {
   objects = []
@@ -34,6 +37,10 @@ function objectSetup() {
 
 function DOMSetup() {
   DOM_objects = {}
+
+  // Reset Button
+  let Reset_Button = createA("/Arena.html", "Reset")
+  Reset_Button.parent('#reset').addClass("button is-danger is-medium")
 
   // Details Button
   let Detail_Button = createSpan("Details")
@@ -67,7 +74,7 @@ function DOMSetup() {
 
   for(let i = 0; i < 5; i++){
     Agent_Buttons[i] = createSpan(`Agent #${i + 1}`)
-    Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-info is-medium").mousePressed(agents[i].display_info.bind(agents[i]))
+    Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-medium").style('background-color', agents[i].colour).mousePressed(agents[i].display_info.bind(agents[i]))
   }
 
   current_agent_info = agents[0]
@@ -88,6 +95,8 @@ function setup() {
 
   // Set DOM elements
   DOMSetup()
+
+  frameRate(frame_rate)
   // noLoop()
 }
 
