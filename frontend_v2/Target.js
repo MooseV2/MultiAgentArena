@@ -5,23 +5,25 @@ class Target {
     this.r = r*scale_unit
     this.id = id
     this.colour = colours[id]
+    this.rgb = hexToRgb(this.colour)
+    this.colour_alpha = color(this.rgb.r, this.rgb.g, this.rgb.b, 75)
     this.target_id = target_id
   }
 
   draw() {
-    fill(this.colour);
+    fill(this.colour)
     stroke(this.colour)
-    ellipseMode(CENTER);
-    rect(this.x - this.r/2, this.y+this.r/2, this.r, this.r);
-    text(this.target_id + 1, this.x, this.y)
-    noFill();
-    if (dist(mouseX, mouseY, this.x, this.y) < 15) {
-      ellipse(this.x, this.y, this.r*10);
-    }
+    ellipseMode(CENTER)
+    rectMode(CENTER)
+    rect(this.x, this.y, this.r, this.r);
+    text(this.target_id + 1, this.x + 5, this.y)
+    noFill()
   }
 
-  display_info(){
+  bloom() {
     stroke(this.colour)
-    text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30);
+    fill(this.colour_alpha)
+    ellipse(this.x, this.y, this.r*10)
+    noFill()
   }
 }

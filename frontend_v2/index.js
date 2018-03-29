@@ -6,12 +6,16 @@ let current_agent_info
 let targets
 let colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
+let pause = false
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
 let scale_unit = 6
 
 // Frame Rate
 let frame_rate = 30
+
+// Graphics
+let trail_canvas
 
 function objectSetup() {
   objects = []
@@ -41,6 +45,10 @@ function DOMSetup() {
   // Reset Button
   let Reset_Button = createA("/Arena.html", "Reset")
   Reset_Button.parent('#reset').addClass("button is-danger is-medium")
+
+  // Pause Button
+  let Pause_Button = createSpan("Pause")
+  Pause_Button.parent('#pause').addClass("button is-info is-medium").mousePressed(toggle_pause)
 
   // Details Button
   let Detail_Button = createSpan("Details")
@@ -84,11 +92,21 @@ function toggle_verbose() {
   verbose = verbose ? false : true
 }
 
+function toggle_pause() {
+  pause = pause ? false : true
+
+  if(pause)
+    noLoop()
+  else
+    loop()
+}
+
 function setup() {
   // document.querySelector('#conn-status').innerHTML = 'Disconnected';
-  let canvas = createCanvas(scale_unit*100, scale_unit*100)
+  canvas = createCanvas(scale_unit*100, scale_unit*100)
   canvas.parent("sketch_wrapper")
-  canvas.background("#333")
+
+  trail_canvas = createGraphics(scale*100, scale_unit*100)
 
   // Create all objects
   objectSetup()
@@ -102,9 +120,10 @@ function setup() {
 
 function draw() {
   background(255);
-  stroke("#333")
-  rect(42,42,558,558)
+  stroke("#888")
+  rect(300, 300, 558, 558)
   noStroke()
+
   for (let instance of objects) {
     if (instance)
       instance.draw()

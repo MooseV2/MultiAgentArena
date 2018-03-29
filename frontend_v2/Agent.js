@@ -5,6 +5,8 @@ class Agent {
     this.r = r*scale_unit
     this.vision = this.r*10*2
     this.colour = colours[id]
+    this.rgb = hexToRgb(this.colour)
+    this.colour_alpha = color(this.rgb.r, this.rgb.g, this.rgb.b, 50)
     this.id = id
     this.targets_found = ["_", "_", "_", "_", "_"]
     this.xoff = random(100000)
@@ -21,8 +23,15 @@ class Agent {
       stroke(this.colour)
       text(`ID: ${this.id}\n Colour: ${this.colour}`, this.x, this.y - 30);
       noFill()
+      fill(this.colour_alpha)
       ellipse(this.x, this.y, this.vision);
     }
+
+    // trail_canvas.noStroke()
+    // trail_canvas.fill(this.colour_alpha)
+    // trail_canvas.ellipseMode(CENTER)
+    // trail_canvas.ellipse(this.x, this.y, this.vision)
+
     this.generate_noise()
   }
 
@@ -51,6 +60,7 @@ class Agent {
   check_target(agent_targets){
     agent_targets.map((target) => {
       if(dist(target.x, target.y, this.x, this.y) <= this.vision/2){
+        target.bloom()
         this.target_found(target)
         remove_from_array(targets[this.id], target)
         remove_from_array(objects, target)
