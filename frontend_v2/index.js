@@ -4,18 +4,15 @@ let Agent_Buttons
 let agents
 let current_agent_info
 let targets
-let colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
+const colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
 let pause = false
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
-let scale_unit = 6
+const scale_unit = 6
 
 // Frame Rate
-let frame_rate = 30
-
-// Graphics
-let trail_canvas
+const frame_rate = 30
 
 function objectSetup() {
   objects = []
@@ -82,7 +79,7 @@ function DOMSetup() {
 
   for(let i = 0; i < 5; i++){
     Agent_Buttons[i] = createSpan(`Agent #${i + 1}`)
-    Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-medium").style('background-color', agents[i].colour).mousePressed(agents[i].display_info.bind(agents[i]))
+    Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-medium").style('background-color', agents[i].colour).style('color', '#fff').mousePressed(agents[i].display_info.bind(agents[i]))
   }
 
   current_agent_info = agents[0]
@@ -106,8 +103,6 @@ function setup() {
   canvas = createCanvas(scale_unit*100, scale_unit*100)
   canvas.parent("sketch_wrapper")
 
-  trail_canvas = createGraphics(scale*100, scale_unit*100)
-
   // Create all objects
   objectSetup()
 
@@ -120,8 +115,11 @@ function setup() {
 
 function draw() {
   background(255);
-  stroke("#888")
-  rect(300, 300, 558, 558)
+
+  stroke("#333")
+  strokeWeight(2)
+  rect(300, 300, 515, 515)
+  strokeWeight(1)
   noStroke()
 
   for (let instance of objects) {

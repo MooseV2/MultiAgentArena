@@ -6,7 +6,8 @@ class Target {
     this.id = id
     this.colour = colours[id]
     this.rgb = hexToRgb(this.colour)
-    this.colour_alpha = color(this.rgb.r, this.rgb.g, this.rgb.b, 75)
+    this.alpha = 75
+    this.colour_alpha = color(this.rgb.r, this.rgb.g, this.rgb.b, alpha)
     this.target_id = target_id
   }
 
