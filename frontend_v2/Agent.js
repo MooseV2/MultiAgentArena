@@ -8,15 +8,25 @@ class Agent {
     this.rgb = hexToRgb(this.colour)
     this.colour_alpha = color(this.rgb.r, this.rgb.g, this.rgb.b, 25)
     this.id = id
-    this.targets_found = ["_", "_", "_", "_", "_"]
+    this.targets_found = []
+    this.targets_found_id = new Array(5).fill('_')
     this.xoff = random(100000)
     this.yoff = random(100000)
     this.vision_trail = createGraphics(scale_unit*100, scale_unit*100)
     this.frame_counter = 0
+    this.last_x = null
+    this.last_y = null
+    this.destination = null
+    this.stage = 0
   }
 
   draw() {
     this.frame_counter++
+
+    if(iterations != 0){
+      this.x = int(iterations[iteration][this.id].X * scale_unit)
+      this.y = int(iterations[iteration][this.id].Y * scale_unit)
+    }
 
     fill(this.colour)
     noStroke()
@@ -32,18 +42,34 @@ class Agent {
       ellipse(this.x, this.y, this.vision);
     }
 
-    if(this.frame_counter % frame_rate == 0 && trail){
-      this.vision_trail.fill(this.colour_alpha)
-      this.vision_trail.noStroke()
-      this.vision_trail.ellipseMode(CENTER)
-      this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
-      tint(255, 25)
+    if(this.frame_counter % 5 == 0 && trail){
+    // if(trail){
+      // this.vision_trail.fill(this.colour_alpha)
+      // this.vision_trail.noStroke()
+      // this.vision_trail.ellipseMode(CENTER)
+      // this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
+      // tint(255, 25)
+
+      this.vision_trail.stroke(this.colour)
+      this.vision_trail.fill(this.colour)
+      if(this.last_x == null){
+        this.last_x = this.x/2
+        this.last_y = this.y/2
+        this.vision_trail.point(this.last_x, this.last_y, this.r)
+      } else {
+        this.vision_trail.line(this.x/2, this.y/2, this.last_x, this.last_y)
+        // this.vision_trail.point(this.last_x, this.last_y, this.r)
+        this.last_x = this.x/2
+        this.last_y = this.y/2
+      }
     }
     imageMode(CORNER)
     image(this.vision_trail, 0, 0, 600, 600)
     noTint()
 
-    this.generate_noise()
+    // this.decision()
+
+    // this.generate_noise()
   }
 
   display_info(){
@@ -56,7 +82,7 @@ class Agent {
     title_span.html(`Agent #${this.id + 1}`)
     x_pos_span.html(`x: ${int(this.x)}`)
     y_pos_span.html(`y: ${int(this.y)}`)
-    targets_found_span.html(`Targets: [${this.targets_found.toString()}]`)
+    targets_found_span.html(`Targets: [${this.targets_found_id.toString()}]`)
   }
 
   // Agent movement range is from (42, 42) => (558, 558)
@@ -66,6 +92,35 @@ class Agent {
       this.y = int(map(noise(this.yoff), 0, 1, 42, 558))
       this.xoff += 0.005
       this.yoff += 0.005
+  }
+
+  decision() {
+    switch(this.stage){
+      case 0:
+        if(this.destination == null){
+          this.destination = {x: int((scale_unit*100-agent_reach)/2), y: int((scale_unit*100-agent_reach)/2)}
+        }
+        this.move_towards(this.destination.x, this.destination.y)
+        break
+      default:
+        break
+    }
+  }
+
+  move_towards(destx, desty){
+    this.x += this.direction(this.x, destx)
+    this.y += this.direction(this.y, desty)
+  }
+
+  direction(startpoint, endpoint){
+    if(endpoint == startpoint)
+      return 0
+
+    if(endpoint < startpoint){
+      return -1
+    } else {
+      return 1
+    }
   }
 
   check_target(agent_targets){
@@ -80,7 +135,8 @@ class Agent {
   }
 
   target_found(target){
-    let index = this.targets_found.indexOf('_')
-    this.targets_found[index] = target.target_id + 1
+    let index = this.targets_found_id.indexOf('_')
+    this.targets_found[index] = target
+    this.targets_found_id[index] = target.target_id
   }
 }

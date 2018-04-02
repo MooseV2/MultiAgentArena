@@ -12,9 +12,13 @@ function handleFileSelect(evt) {
     let reader = new FileReader();
     reader.onload = ((file) => {
         return (e) => {
-            let contents = reader.result.split('\n');
+            let contents = JSON.parse(reader.result);
             // Do whatever with contents (array of text lines)
-            parseSimulation(contents);
+
+            console.log("File Read")
+            console.log(contents)
+            starting_positions = contents[0]
+            iterations = contents
         }
     })(file);
     reader.readAsText(file);

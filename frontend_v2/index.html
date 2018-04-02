@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <!-- "Javascript Files for the P5 Library" -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script> -->
+    <!-- P5 Sketch Files -->
+    <script src="general.js"></script>
+    <script src="Grid.js"></script>
+    <script src="Agent.js"></script>
+    <script src="Target.js"></script>
+    <script src="index.js"></script>
+  </head>
+
+  <body id="thebody">
+    <section class="hero is-primary is-bold">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Multi Agent Simulation
+          </h1>
+          <h2 class="subtitle">
+            Group 25
+          </h2>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container is-widescreen">
+        <div class="columns">
+          <div class="column is-6">
+            <div class="container">
+              <div id="sketch_wrapper"></div>
+            </div>
+          </div>
+          <div class="column is-6 button-panel">
+            <div class="tile is-ancestor">
+              <div class="tile is-parent">
+                <article class="tile is-child box">
+                  <p class="title">Control Panel</p>
+                </article>
+              </div>
+            </div>
+            <div class="tile is-ancestor">
+              <div class="tile is-parent is-6 is-vertical">
+                <article class="tile is-child box">
+                  <p class="title">Game Controls</p>
+                  <div class="tile is-ancestor">
+                    <div class="tile is-parent is-vertical is-6">
+                      <div class="tile is-child" id="reset">
+                      </div>
+                      <div class="tile is-child" id="pause">
+                      </div>
+                    </div>
+                    <div class="tile is-parent is-vertical is-6">
+                      <div class="tile is-child" id="details">
+                      </div>
+                      <div class="tile is-child" id="trail">
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+                <div class="tile is-parent is-6 is-vertical">
+                  <div class="tile is-child box">
+                    <p class="title">Game State</p>
+                    <article id="agent-info">
+                    </article>
+                  </div>
+                </div>
+              </div>
+              <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <div class="tile is-ancestor">
+                          <div class="tile is-parent">
+                            <div class="tile is-child" id="Agent1"></div>
+                            <div class="tile is-child" id="Agent2"></div>
+                            <div class="tile is-child" id="Agent3"></div>
+                            <div class="tile is-child" id="Agent4"></div>
+                            <div class="tile is-child" id="Agent5"></div>
+                          </div>
+                        </div>
+                  </article>
+                </div>
+              </div>
+              <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <div class="tile is-ancestor">
+                          <div class="tile is-parent">
+                            <div class="tile is-child" id="Iterations">
+                              <p class="title">Iterations</p>
+                              <div class="tile is-child" id="iteration"></div>
+                            </div>
+                          </div>
+                        </div>
+                  </article>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+  <!-- File Handling -->
+  <script src="file_handler.js"></script>
+</html>

@@ -7,7 +7,9 @@ let targets
 const colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
 let pause = false
-let trail = false;
+let trail = false
+let iteration = 1
+let pickup = false;
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
 const scale_unit = 6
@@ -15,101 +17,11 @@ const scale_unit = 6
 // Frame Rate
 const frame_rate = 30
 
-function objectSetup() {
-  objects = []
+// Agent vision properties
+const agent_reach = 515
 
-  objects[0] = new Grid(scale_unit, scale_unit)
-
-  agents = new Array()
-  targets = new Array()
-
-  for(let i = 0; i < 5; i++)
-    agents[i] = new Agent(i, int(random(scale_unit*100)), int(random(scale_unit*100)))
-  
-  objects = objects.concat(agents)
-
-  for(let i = 0; i < 5; i++){
-    agent_targets = new Array()
-    for(let j = 0; j < 5; j++)
-      agent_targets[j] = new Target(i, j, int(random(scale_unit*100)), int(random(scale_unit*100)))
-    targets = targets.concat([agent_targets])
-    objects = objects.concat(agent_targets)
-  }
-}
-
-function DOMSetup() {
-  DOM_objects = {}
-
-  // Reset Button
-  let Reset_Button = createA("/Arena.html", "Reset")
-  Reset_Button.parent('#reset').addClass("button is-danger is-medium")
-
-  // Pause Button
-  let Pause_Button = createSpan("Pause")
-  Pause_Button.parent('#pause').addClass("button is-info is-medium").mousePressed(toggle_pause)
-
-  // Trail Button
-  let Trail_Button = createSpan("Trail On")
-  Trail_Button.parent('#trail').addClass("button is-link is-medium").mousePressed(toggle_trail)
-
-  // Details Button
-  let Detail_Button = createSpan("Details")
-  Detail_Button.parent('#details').addClass("button is-primary is-medium").mousePressed(toggle_verbose)
-
-  // Agent Info
-  let Agent_Title = createP("Agent #1")
-  Agent_Title.parent('#agent-info').addClass("is-size-5")
-
-  let Agent_X_Position = createP("x: ")
-  Agent_X_Position.parent('#agent-info').addClass("is-size-6")
-
-  let Agent_Y_Position = createP("y: ")
-  Agent_Y_Position.parent('#agent-info').addClass("is-size-6")
-
-  let Agent_Targets_Found = createP("Targets Found: ")
-  Agent_Targets_Found.parent('#agent-info').addClass("is-size-6")
-
-  DOM_objects = Object.assign({
-    "Reset" : Reset_Button,
-    "Pause": Pause_Button,
-    "Detail": Detail_Button, 
-    "Trail": Trail_Button,
-    "Agent": {
-      "Title": Agent_Title,
-      "X": Agent_X_Position,
-      "Y": Agent_Y_Position,
-      "Targets_Found": Agent_Targets_Found
-    }
-  });
-
-  // Agent info buttons
-  Agent_Buttons = []
-
-  for(let i = 0; i < 5; i++){
-    Agent_Buttons[i] = createSpan(`Agent #${i + 1}`)
-    Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-medium").style('background-color', agents[i].colour).style('color', '#fff').mousePressed(agents[i].display_info.bind(agents[i]))
-  }
-
-  current_agent_info = agents[0]
-}
-
-function toggle_verbose() {
-  verbose = verbose ? false : true
-}
-
-function toggle_pause() {
-  pause = pause ? false : true
-  DOM_objects.Pause.html(`${pause ? "Resume" : "Pause"}`)
-  if(pause)
-    noLoop()
-  else
-    loop()
-}
-
-function toggle_trail() {
-  trail = trail ? false : true
-  DOM_objects.Trail.html(`Trail ${!trail ? "On" : "Off"}`)
-}
+let starting_positions = []
+let iterations = []
 
 function setup() {
   // document.querySelector('#conn-status').innerHTML = 'Disconnected';
@@ -123,15 +35,23 @@ function setup() {
   DOMSetup()
 
   frameRate(frame_rate)
-  // noLoop()
+
 }
 
 function draw() {
+
+  if(starting_positions != 0) {
+    pickup = false
+    setup_positions()
+    iteration = 1
+    pickup = true
+  }
+
   background(255);
 
   stroke("#333")
   strokeWeight(2)
-  rect(300, 300, 515, 515)
+  rect(scale_unit*50, scale_unit*50, agent_reach, agent_reach)
   strokeWeight(1)
   noStroke()
 
@@ -140,9 +60,17 @@ function draw() {
       instance.draw()
   }
 
+  if(iterations != 0)
+    iteration++
+  
+  if(iteration >= iterations.length)
+    iteration = 1
+
   current_agent_info.display_info()
 
-  agents.map((agent) => {
-    agent.check_target(targets[agent.id])
-  })
+  if(pickup){
+    agents.map((agent) => {
+      agent.check_target(targets[agent.id])
+    })
+  }
 }

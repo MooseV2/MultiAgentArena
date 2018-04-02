@@ -17,7 +17,7 @@ class Target {
     ellipseMode(CENTER)
     rectMode(CENTER)
     rect(this.x, this.y, this.r, this.r);
-    text(this.target_id + 1, this.x + 5, this.y)
+    text(this.target_id, this.x + 5, this.y)
     noFill()
   }
 
