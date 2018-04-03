@@ -37,6 +37,7 @@ function objectSetup() {
 }
 
 function setup_positions(){
+  starting_positions_history = starting_positions
   objects = []
 
   objects[0] = new Grid(scale_unit, scale_unit)
@@ -70,7 +71,7 @@ function DOMSetup() {
 
   // Reset Button
   let Reset_Button = createSpan("Reset")
-  Reset_Button.parent('#reset').addClass("button is-danger is-medium").mousePressed(objectSetup)
+  Reset_Button.parent('#reset').addClass("button is-danger is-medium").mousePressed(reset)
 
   // // Reset Button
   // let Reset_Button = createA("/", "Reset")
@@ -119,7 +120,7 @@ function DOMSetup() {
 
   // Iteration Slider
   let Iterations_Slider = createSlider(0, 100, 0, 1)
-  Iterations_Slider.parent('#iteration-slider').id('slider')
+  Iterations_Slider.parent('#iteration-slider').id('slider').attribute('disabled', '')
 
   // Iteration Input
   let Iterations_Input = createInput('')
@@ -157,9 +158,9 @@ function toggle_pause() {
   pause = pause ? false : true
   DOM_objects.Pause.html(`${pause ? "Resume" : "Pause"}`)
   if(pause)
-    noLoop()
+    DOM_objects.Slider.removeAttribute('disabled');
   else
-    loop()
+  DOM_objects.Slider.attribute('disabled', '');
 }
 
 function toggle_trail() {
@@ -174,4 +175,8 @@ function set_iteration(){
   DOM_objects.Slider.value(value)
 
   iteration = value
+}
+
+function reset(){
+  starting_positions = starting_positions_history
 }
