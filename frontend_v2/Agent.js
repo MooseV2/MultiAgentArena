@@ -43,12 +43,11 @@ class Agent {
     }
 
     if(this.frame_counter % 5 == 0 && trail){
-    // if(trail){
-      // this.vision_trail.fill(this.colour_alpha)
-      // this.vision_trail.noStroke()
-      // this.vision_trail.ellipseMode(CENTER)
-      // this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
-      // tint(255, 25)
+      this.vision_trail.fill(this.colour_alpha)
+      this.vision_trail.noStroke()
+      this.vision_trail.ellipseMode(CENTER)
+      this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
+      tint(255, 25)
 
       this.vision_trail.stroke(this.colour)
       this.vision_trail.fill(this.colour)
@@ -125,11 +124,12 @@ class Agent {
 
   check_target(agent_targets){
     agent_targets.map((target) => {
-      if(dist(target.x, target.y, this.x, this.y) <= this.vision/2){
+      if(target.visible && (dist(target.x, target.y, this.x, this.y) <= this.vision/2)){
         target.bloom()
         this.target_found(target)
-        remove_from_array(targets[this.id], target)
-        remove_from_array(objects, target)
+        // remove_from_array(targets[this.id], target)
+        // remove_from_array(objects, target)
+        target.visible = false
       }
     })
   }
