@@ -7,15 +7,13 @@ from pythonpathfinding.pathfinding.core.node import Node
 from pythonpathfinding.pathfinding.core.diagonal_movement import DiagonalMovement
 import json
 import pandas as pd
-import multiprocessing as mp
-import cProfile
 
 def start_positions(agents):
 
     starting_states = []
     for agent in agents:
 
-        state = {"X":int(agent.x), "Y":int(agent.y),
+        state = {"X":int(10*agent.x), "Y":int(10*agent.y),
                 "Targets":[{"X":int(agent.targets[0][0]),"Y":int(agent.targets[0][1])},
                 {"X":int(agent.targets[1][0]),"Y":int(agent.targets[1][1])},
                 {"X":int(agent.targets[2][0]),"Y":int(agent.targets[2][1])},
@@ -29,9 +27,8 @@ def output_frontend(agents):
 
     agent_path = []
     for cnt,agent in enumerate(agents):
-        state = {"agent_no":cnt+1,
-                "X":int(agent.x),
-                "Y":int(agent.y)}
+        state = {"X":int(10*agent.x),
+                "Y":int(10*agent.y)}
         agent_path.append(state)
     return agent_path
 
@@ -74,7 +71,7 @@ class Agent():
         self.happiness_array = []
 
     def genrate_path(self):
-        matrix = np.zeros((10,10))
+        matrix = np.zeros((100,100))
         for target in self.targets:
             matrix[target[0],target[1]] = self.target_type
 
@@ -100,7 +97,15 @@ class Agent():
         else:
             print("Problem with pathfinding path only contained ", cnt)
 
-    # def check_distance(self):
+    # def check_distance_agents(self,agents,r=1):
+    #     for cnt,agent in enumerate(agents):
+    #         if hypot((agent.x-self.x),(agent.y-self.y))<r:
+    #             return True
+    #         else:
+    #             return False
+
+
+    # def check_distance_agents(self)
 
 
 
@@ -113,27 +118,32 @@ class Agent():
         except:
             return[0,0]
 
-    def check_empty(self, alltargets):
+    def check_empty(self, alltargets,r=10):
         for cnt,target in enumerate(self.targets):
-            if self.x == target[0] and self.y == target[1]:
+            if hypot((target[0]-self.x),(target[1]-self.y))<r:
                 del self.targets[cnt]
                 self.no_targets_collected +=1
                 return False
             else:
                 pass
         for target in alltargets:
-            if self.x == target[0] and self.y == target[1]:
+            if hypot((target[0]-self.x),(target[1]-self.y))<r:
                 return False
             else:
                 pass
         return True
 
-    def update(self,empty):
+    def update(self,empty,agents):
 
         self.steps_taken +=1
         self.prune_path(empty)
         self.happiness = (self.no_targets_collected/(self.steps_taken))
         self.happiness_array.append(self.happiness)
+
+        # if self.check_distance_agents(agents):
+        #     print("Too Close")
+        #     pass
+        # else:
 
         if (self.moves[0] == 0 and self.moves[1]==0) :
             self.moves = self.next_moves()
@@ -155,6 +165,7 @@ def main():
 
     iterations = 10
     csv = []
+    starting_states=[]
     for iter_no in range(iterations):
 
         path_taken = []
@@ -167,37 +178,51 @@ def main():
         for i in range(5):
             targets = []
             for j in range(no_targets):
-                targetpos = np.random.randint(10,size=2)
+                targetpos = np.random.randint(100,size=2)
                 targets.append(targetpos)
                 alltargets.append(targetpos)
-            agentpos = np.random.randint(10,size=2)
+            agentpos = np.random.randint(100,size=2)
             agents.append(Agent(agentpos,i+1,targets))
+        # print (json.dumps(start_positions(agents),indent=4))
 
-        filename = "CSV_files/start_pos%d.txt" %(iter_no+1)
-        with open(filename,'w') as outfile:
-            json.dump(start_positions(agents),outfile)
+        starting_states.append(start_positions(agents))
+
+        # filename = "CSV_files/start_pos%d.txt" %(iter_no+1)
+        # with open(filename,'w') as outfile:
+        #     json.dump(start_positions(agents),outfile)
 
         print("Paths found")
+        flag =0
         while(agents[0].no_targets_collected < no_targets and
                 agents[1].no_targets_collected < no_targets and
                 agents[2].no_targets_collected < no_targets and
                 agents[3].no_targets_collected < no_targets and
                 agents[4].no_targets_collected < no_targets):
 
+
             for cnt,agent in enumerate(agents):
                 # agent.check_correctness()
-                agent.update(empty)
+                # agent.check_distance_targets()
+                agent.update(empty,np.delete(agents,cnt))
+                np.insert(agents,cnt,agent)
                 if agent.check_empty(alltargets):
                     empty.add((agent.x,agent.y))
-
-            path_taken.append(output_frontend(agents))
+            if flag==0:
+                flag+=1
+            else:
+                starting_states.append(output_frontend(agents))
 
         for cnt,agent in enumerate(agents):
             csv.append(csv_writer(iter_no+1,cnt+1,agent))
 
         filename = "CSV_files/path_taken%d.txt" %(iter_no+1)
         with open(filename,'w') as outfile:
-            json.dump(path_taken,outfile)
+            json.dump(starting_states,outfile,indent=2)
+
+
+    # filename = "CSV_files/path_taken.txt"
+    # with open(filename,'w') as outfile:
+    #     json.dump(starting_states,outfile,indent=2)
 
     data = pd.DataFrame(csv)
     data.to_csv("CSV_files/csv_1.csv")
