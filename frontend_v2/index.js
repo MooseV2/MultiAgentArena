@@ -15,12 +15,13 @@ let pickup = false;
 const scale_unit = 6
 
 // Frame Rate
-const frame_rate = 30
+const frame_rate = 5
 
 // Agent vision properties
 const agent_reach = 515
 
 let starting_positions = []
+let starting_positions_history = []
 let iterations = []
 
 function setup() {
@@ -55,12 +56,21 @@ function draw() {
   strokeWeight(1)
   noStroke()
 
+  // if(pause){
+  //   console.log(4)
+  //   iteration = DOM_objects.Slider.value()
+  //   DOM_objects.Iterations.html("Iteration: " + iteration)
+  // } else {
+    DOM_objects.Iterations.html("Iteration: " + iteration)
+  //   DOM_objects.Slider.value(iteration)  
+  // }
+
   for (let instance of objects) {
     if (instance)
       instance.draw()
   }
 
-  if(iterations != 0)
+  if(iterations != 0 && !pause)
     iteration++
   
   if(iteration >= iterations.length)

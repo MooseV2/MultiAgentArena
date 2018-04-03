@@ -11,3 +11,12 @@
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
 }
+
+input#slider{
+  position: relative !important;
+  width: 100%;
+}
+
+#iteration-submit {
+  padding-left: 15px;
+}
