@@ -7,28 +7,30 @@ from pythonpathfinding.pathfinding.core.node import Node
 from pythonpathfinding.pathfinding.core.diagonal_movement import DiagonalMovement
 import json
 import pandas as pd
+import random
+from random import shuffle
 
-def start_positions(agents):
+def start_positions(agents,scaler):
 
     starting_states = []
     for agent in agents:
 
-        state = {"X":int(agent.x), "Y":int(agent.y),
-                "Targets":[{"X":int(agent.targets[0][0]),"Y":int(agent.targets[0][1])},
-                {"X":int(agent.targets[1][0]),"Y":int(agent.targets[1][1])},
-                {"X":int(agent.targets[2][0]),"Y":int(agent.targets[2][1])},
-                {"X":int(agent.targets[3][0]),"Y":int(agent.targets[3][1])},
-                {"X":int(agent.targets[4][0]),"Y":int(agent.targets[4][1])},]}
+        state = {"X":int(scaler*agent.x), "Y":int(scaler*agent.y),
+                "Targets":[{"X":int(scaler*agent.targets[0][0]),"Y":int(scaler*agent.targets[0][1])},
+                {"X":int(scaler*agent.targets[1][0]),"Y":int(scaler*agent.targets[1][1])},
+                {"X":int(scaler*agent.targets[2][0]),"Y":int(scaler*agent.targets[2][1])},
+                {"X":int(scaler*agent.targets[3][0]),"Y":int(scaler*agent.targets[3][1])},
+                {"X":int(scaler*agent.targets[4][0]),"Y":int(scaler*agent.targets[4][1])},]}
         starting_states.append(state)
     return starting_states
 
 
-def output_frontend(agents):
+def output_frontend(agents,scaler):
 
     agent_path = []
     for cnt,agent in enumerate(agents):
-        state = {"X":int(agent.x),
-                "Y":int(agent.y)}
+        state = {"X":int(scaler*agent.x),
+                "Y":int(scaler*agent.y)}
         agent_path.append(state)
     return agent_path
 
@@ -58,8 +60,9 @@ def csv_writer(iteration,agent_no,agent):
 
 
 class Agent():
-    def __init__(self, position, target_type,targets):
-        self.x, self.y = position
+    def __init__(self, target_type,targets):
+        self.x = random.randint(0,19)
+        self.y = random.randint(0,19)
         self.target_type = target_type
         self.no_targets_collected=0
         self.steps_taken=0
@@ -69,18 +72,60 @@ class Agent():
         self.genrate_path()
         self.moves = [0,0]
         self.happiness_array = []
+        # self.positions = []
+        self.notleft = True
+        self.leftcnt = 0
+
+    # def genrate_path(self):
+    #     matrix = np.zeros((20,20))
+    #     for target in self.targets:
+    #         matrix[target[0],target[1]] = self.target_type
+    #
+    #     my_grid = Grid(matrix=matrix)
+    #     agent = my_grid.node(self.x,self.y)
+    #     finder = BreadthFirstFinder(diagonal_movement=DiagonalMovement.never)
+    #     path, runs = finder.find_path(agent,self.target_type,my_grid)
+    #
+    #     self.path = path
+    #     print(self.path)
+    #
+    #     t
 
     def genrate_path(self):
-        matrix = np.zeros((100,100))
-        for target in self.targets:
-            matrix[target[0],target[1]] = self.target_type
 
-        my_grid = Grid(matrix=matrix)
-        agent = my_grid.node(self.x,self.y)
-        finder = BreadthFirstFinder(diagonal_movement=DiagonalMovement.never)
-        path, runs = finder.find_path(agent,self.target_type,my_grid)
 
-        self.path = path
+
+
+        self.path =[Node(7,7),Node(7,93),Node(14,93),Node(14,7)
+                    ,Node(21,7),Node(21,93),Node(28,93),Node(28,7),
+                    Node(35,7),Node(35,93),Node(42,93),Node(42,7)
+                    ,Node(49,7),Node(49,93),Node(56,93),Node(56,7),
+                    Node(63,7),Node(63,93),Node(70,93),Node(70,7),
+                    Node(77,7),Node(77,93),Node(84,93),Node(84,7),
+                    Node(91,7),Node(91,93),Node(98,93),Node(98,7)]
+        if random.random() < 0.5:
+            # self.path.reverse()
+            shuffle(self.path)
+
+
+
+
+
+
+
+
+        # matrix = np.zeros((20,20))
+        # for target in self.targets:
+        #     matrix[target[0],target[1]] = self.target_type
+        #
+        # my_grid = Grid(matrix=matrix)
+        # agent = my_grid.node(self.x,self.y)
+        # finder = BreadthFirstFinder(diagonal_movement=DiagonalMovement.never)
+        # path, runs = finder.find_path(agent,self.target_type,my_grid)
+        #
+        # self.path = path
+
+
 
     def prune_path(self,empty):
         self.path = [point for point in self.path if point not in empty]
@@ -118,7 +163,7 @@ class Agent():
         except:
             return[0,0]
 
-    def check_empty(self, alltargets,r=10):
+    def check_empty(self, alltargets,r=3):
         for cnt,target in enumerate(self.targets):
             if hypot((target[0]-self.x),(target[1]-self.y))<r:
                 del self.targets[cnt]
@@ -150,10 +195,19 @@ class Agent():
 
         if self.moves[0] !=0:
             next_move = 1*np.sign(self.moves[0])
+            if next_move<0 and self.notleft:
+                self.moves[0] = -2
+                self.notleft = False
+
+                compare = self.path[0].x
+                for cnr,i in enumerate(self.path):
+                    if compare == self.path[cnr].x:
+                        self.path[cnr].x -=2
             self.moves[0] = self.moves[0] - next_move
             self.x += next_move
 
         elif self.moves[1] !=0:
+            self.notleft = True
             next_move = 1*np.sign(self.moves[1])
             self.moves[1] = self.moves[1] - next_move
             self.y += next_move
@@ -166,6 +220,8 @@ def main():
     iterations = 10
     csv = []
     starting_states=[]
+    scaler = 5
+
     for iter_no in range(iterations):
 
         path_taken = []
@@ -178,18 +234,13 @@ def main():
         for i in range(5):
             targets = []
             for j in range(no_targets):
-                targetpos = np.random.randint(100,size=2)
+                targetpos = [random.randint(0,19),random.randint(0,19)]
                 targets.append(targetpos)
                 alltargets.append(targetpos)
-            agentpos = np.random.randint(100,size=2)
-            agents.append(Agent(agentpos,i+1,targets))
+            agents.append(Agent(i+1,targets))
         # print (json.dumps(start_positions(agents),indent=4))
 
-        starting_states.append(start_positions(agents))
-
-        # filename = "CSV_files/start_pos%d.txt" %(iter_no+1)
-        # with open(filename,'w') as outfile:
-        #     json.dump(start_positions(agents),outfile)
+        starting_states.append(start_positions(agents,scaler))
 
         print("Paths found")
         flag =0
@@ -198,7 +249,6 @@ def main():
                 agents[2].no_targets_collected < no_targets and
                 agents[3].no_targets_collected < no_targets and
                 agents[4].no_targets_collected < no_targets):
-
 
             for cnt,agent in enumerate(agents):
                 # agent.check_correctness()
@@ -210,7 +260,7 @@ def main():
             if flag==0:
                 flag+=1
             else:
-                starting_states.append(output_frontend(agents))
+                starting_states.append(output_frontend(agents,scaler))
 
         for cnt,agent in enumerate(agents):
             csv.append(csv_writer(iter_no+1,cnt+1,agent))
@@ -218,11 +268,6 @@ def main():
         filename = "CSV_files/path_taken%d.txt" %(iter_no+1)
         with open(filename,'w') as outfile:
             json.dump(starting_states,outfile,indent=2)
-
-
-    # filename = "CSV_files/path_taken.txt"
-    # with open(filename,'w') as outfile:
-    #     json.dump(starting_states,outfile,indent=2)
 
     data = pd.DataFrame(csv)
     data.to_csv("CSV_files/csv_1.csv")
