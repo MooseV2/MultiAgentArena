@@ -13,7 +13,7 @@ def start_positions(agents):
     starting_states = []
     for agent in agents:
 
-        state = {"X":int(10*agent.x), "Y":int(10*agent.y),
+        state = {"X":int(agent.x), "Y":int(agent.y),
                 "Targets":[{"X":int(agent.targets[0][0]),"Y":int(agent.targets[0][1])},
                 {"X":int(agent.targets[1][0]),"Y":int(agent.targets[1][1])},
                 {"X":int(agent.targets[2][0]),"Y":int(agent.targets[2][1])},
@@ -27,8 +27,8 @@ def output_frontend(agents):
 
     agent_path = []
     for cnt,agent in enumerate(agents):
-        state = {"X":int(10*agent.x),
-                "Y":int(10*agent.y)}
+        state = {"X":int(agent.x),
+                "Y":int(agent.y)}
         agent_path.append(state)
     return agent_path
 
