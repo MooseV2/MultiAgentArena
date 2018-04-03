@@ -47,7 +47,7 @@ function setup_positions(){
   Agent_Buttons = DOM_objects.Agent_Buttons
 
   for(let i = 0; i < 5; i++){
-    agents[i] = new Agent(i, int(starting_positions[i].X * scale_unit *10), int(starting_positions[i].Y * scale_unit *10))
+    agents[i] = new Agent(i, int(starting_positions[i].X * scale_unit), int(starting_positions[i].Y * scale_unit))
     Agent_Buttons[i].mousePressed(agents[i].display_info.bind(agents[i]))
   }
   
@@ -56,7 +56,7 @@ function setup_positions(){
   for(let i = 0; i < 5; i++){
     agent_targets = new Array()
     for(let j = 0; j < 5; j++)
-      agent_targets[j] = new Target(i, j+1, int(starting_positions[i].Targets[j].X * scale_unit *10), int(starting_positions[i].Targets[j].Y * scale_unit *10))
+      agent_targets[j] = new Target(i, j+1, int(starting_positions[i].Targets[j].X * scale_unit), int(starting_positions[i].Targets[j].Y * scale_unit))
     targets = targets.concat([agent_targets])
     objects = objects.concat(agent_targets)
   }
@@ -113,8 +113,20 @@ function DOMSetup() {
     Agent_Buttons[i].parent(`#Agent${i + 1}`).addClass("button is-medium").style('background-color', agents[i].colour).style('color', '#fff').mousePressed(agents[i].display_info.bind(agents[i]))
   }
 
+  // Iteration Number
   let Iterations_Span = createSpan("Iteration: " + iteration)
-  Iterations_Span.parent('#iteration').addClass('is-size-6')
+  Iterations_Span.parent('#iteration').addClass('is-size-4')
+
+  // Iteration Slider
+  let Iterations_Slider = createSlider(0, 100, 0, 1)
+  Iterations_Slider.parent('#iteration-slider').id('slider')
+
+  // Iteration Input
+  let Iterations_Input = createInput('')
+  Iterations_Input.parent('#iteration-input').addClass('input').value(0)
+  // Reset Button
+  let Iterations_Submit = createSpan("Submit")
+  Iterations_Submit.parent('#iteration-submit').addClass("button is-danger is-medium").mousePressed(set_iteration)
 
   DOM_objects = Object.assign({
     "Reset" : Reset_Button,
@@ -127,7 +139,11 @@ function DOMSetup() {
       "Y": Agent_Y_Position,
       "Targets_Found": Agent_Targets_Found
     },
-    "Agent_Buttons": Agent_Buttons
+    "Agent_Buttons": Agent_Buttons,
+    "Iterations": Iterations_Span,
+    "Slider": Iterations_Slider,
+    "Iterations_Input": Iterations_Input,
+    "Iterations_Button": Iterations_Submit
   });
 
   current_agent_info = agents[0]
@@ -149,4 +165,13 @@ function toggle_pause() {
 function toggle_trail() {
   trail = trail ? false : true
   DOM_objects.Trail.html(`Trail ${!trail ? "On" : "Off"}`)
+}
+
+function set_iteration(){
+  value = int(DOM_objects.Iterations_Input.value())
+
+  DOM_objects.Iterations.html("Iteration: " + value)
+  DOM_objects.Slider.value(value)
+
+  iteration = value
 }

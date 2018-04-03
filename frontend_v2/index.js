@@ -15,7 +15,7 @@ let pickup = false;
 const scale_unit = 6
 
 // Frame Rate
-const frame_rate = 30
+const frame_rate = 5
 
 // Agent vision properties
 const agent_reach = 515
@@ -54,6 +54,9 @@ function draw() {
   rect(scale_unit*50, scale_unit*50, agent_reach, agent_reach)
   strokeWeight(1)
   noStroke()
+
+  DOM_objects.Iterations.html("Iteration: " + iteration)
+  DOM_objects.Slider.value(iteration).attribute('disabled', '')
 
   for (let instance of objects) {
     if (instance)
