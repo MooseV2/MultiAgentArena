@@ -14,7 +14,6 @@ def start_positions(agents,scaler):
 
     starting_states = []
     for agent in agents:
-
         state = {"X":int(scaler*agent.x), "Y":int(scaler*agent.y),
                 "Targets":[{"X":int(scaler*agent.targets[0][0]),"Y":int(scaler*agent.targets[0][1])},
                 {"X":int(scaler*agent.targets[1][0]),"Y":int(scaler*agent.targets[1][1])},
@@ -42,7 +41,7 @@ def csv_writer(iteration,agent_no,agent):
     try:
         competitive =((agent.happiness-min_happ)/(max_happ-min_happ))
     except:
-        competitive = 1
+        competitive = 0
 
     data = {"A":1,
             "B":iteration,
@@ -55,14 +54,16 @@ def csv_writer(iteration,agent_no,agent):
             "I":np.mean(agent.happiness_array),
             "J":np.std(agent.happiness_array),
             "K":competitive}
-
     return data
+# def csv_writer_2(data):
+
 
 
 class Agent():
-    def __init__(self, target_type,targets):
-        self.x = random.randint(0,19)
-        self.y = random.randint(0,19)
+    def __init__(self, target_type,targets,offset):
+        self.x = random.randint(0,99)
+        self.y = random.randint(0,99)
+        self.offset = offset
         self.target_type = target_type
         self.no_targets_collected=0
         self.steps_taken=0
@@ -72,9 +73,6 @@ class Agent():
         self.genrate_path()
         self.moves = [0,0]
         self.happiness_array = []
-        # self.positions = []
-        self.notleft = True
-        self.leftcnt = 0
 
     # def genrate_path(self):
     #     matrix = np.zeros((20,20))
@@ -89,42 +87,19 @@ class Agent():
     #     self.path = path
     #     print(self.path)
     #
-    #     t
+
 
     def genrate_path(self):
 
-
-
-
-        self.path =[Node(7,7),Node(7,93),Node(14,93),Node(14,7)
-                    ,Node(21,7),Node(21,93),Node(28,93),Node(28,7),
-                    Node(35,7),Node(35,93),Node(42,93),Node(42,7)
-                    ,Node(49,7),Node(49,93),Node(56,93),Node(56,7),
-                    Node(63,7),Node(63,93),Node(70,93),Node(70,7),
-                    Node(77,7),Node(77,93),Node(84,93),Node(84,7),
-                    Node(91,7),Node(91,93),Node(98,93),Node(98,7)]
-        if random.random() < 0.5:
-            # self.path.reverse()
+        self.path =[Node(7+self.offset,7+self.offset),Node(7+self.offset,98+self.offset),Node(14+self.offset,98+self.offset),Node(14+self.offset,7+self.offset),
+                    Node(21+self.offset,7+self.offset),Node(21+self.offset,98+self.offset),Node(28+self.offset,98+self.offset),Node(28+self.offset,7+self.offset),
+                    Node(35+self.offset,7+self.offset),Node(35+self.offset,98+self.offset),Node(42+self.offset,98+self.offset),Node(42+self.offset,7+self.offset),
+                    Node(49+self.offset,7+self.offset),Node(49+self.offset,98+self.offset),Node(56+self.offset,98+self.offset),Node(56+self.offset,7+self.offset),
+                    Node(63+self.offset,7+self.offset),Node(63+self.offset,98+self.offset),Node(70+self.offset,98+self.offset),Node(70+self.offset,7+self.offset),
+                    Node(77+self.offset,7+self.offset),Node(77+self.offset,98+self.offset),Node(84+self.offset,98+self.offset),Node(84+self.offset,7+self.offset),
+                    Node(91+self.offset,7+self.offset),Node(91+self.offset,98+self.offset),Node(98+self.offset,98+self.offset),Node(98+self.offset,7+self.offset)]
+        if random.random() < 0.9:
             shuffle(self.path)
-
-
-
-
-
-
-
-
-        # matrix = np.zeros((20,20))
-        # for target in self.targets:
-        #     matrix[target[0],target[1]] = self.target_type
-        #
-        # my_grid = Grid(matrix=matrix)
-        # agent = my_grid.node(self.x,self.y)
-        # finder = BreadthFirstFinder(diagonal_movement=DiagonalMovement.never)
-        # path, runs = finder.find_path(agent,self.target_type,my_grid)
-        #
-        # self.path = path
-
 
 
     def prune_path(self,empty):
@@ -142,28 +117,17 @@ class Agent():
         else:
             print("Problem with pathfinding path only contained ", cnt)
 
-    # def check_distance_agents(self,agents,r=1):
-    #     for cnt,agent in enumerate(agents):
-    #         if hypot((agent.x-self.x),(agent.y-self.y))<r:
-    #             return True
-    #         else:
-    #             return False
-
-
-    # def check_distance_agents(self)
-
-
 
     def next_moves(self):
         try:
             movesX = self.path[0].x - self.x
             movesY = self.path[0].y - self.y
-            self.goal= self.path.pop(0)
+            self.path.pop(0)
             return [movesX,movesY]
         except:
             return[0,0]
 
-    def check_empty(self, alltargets,r=3):
+    def check_empty(self, alltargets,r=10):
         for cnt,target in enumerate(self.targets):
             if hypot((target[0]-self.x),(target[1]-self.y))<r:
                 del self.targets[cnt]
@@ -178,31 +142,18 @@ class Agent():
                 pass
         return True
 
-    def update(self,empty,agents):
+    def update(self):
 
         self.steps_taken +=1
-        self.prune_path(empty)
+        # self.prune_path(empty)
         self.happiness = (self.no_targets_collected/(self.steps_taken))
         self.happiness_array.append(self.happiness)
-
-        # if self.check_distance_agents(agents):
-        #     print("Too Close")
-        #     pass
-        # else:
 
         if (self.moves[0] == 0 and self.moves[1]==0) :
             self.moves = self.next_moves()
 
         if self.moves[0] !=0:
             next_move = 1*np.sign(self.moves[0])
-            if next_move<0 and self.notleft:
-                self.moves[0] = -2
-                self.notleft = False
-
-                compare = self.path[0].x
-                for cnr,i in enumerate(self.path):
-                    if compare == self.path[cnr].x:
-                        self.path[cnr].x -=2
             self.moves[0] = self.moves[0] - next_move
             self.x += next_move
 
@@ -217,28 +168,26 @@ class Agent():
 
 def main():
 
-    iterations = 10
+    iterations = 100
     csv = []
-    starting_states=[]
-    scaler = 5
+
+    scaler = 1
 
     for iter_no in range(iterations):
 
+        starting_states=[]
         path_taken = []
         no_targets = 5
         agents = []
-        empty = set()
         alltargets = []
 
-        all_targetss= []
         for i in range(5):
             targets = []
             for j in range(no_targets):
-                targetpos = [random.randint(0,19),random.randint(0,19)]
+                targetpos = [random.randint(0,99),random.randint(0,99)]
                 targets.append(targetpos)
                 alltargets.append(targetpos)
-            agents.append(Agent(i+1,targets))
-        # print (json.dumps(start_positions(agents),indent=4))
+            agents.append(Agent(i+1,targets,-i))
 
         starting_states.append(start_positions(agents,scaler))
 
@@ -251,12 +200,9 @@ def main():
                 agents[4].no_targets_collected < no_targets):
 
             for cnt,agent in enumerate(agents):
-                # agent.check_correctness()
-                # agent.check_distance_targets()
-                agent.update(empty,np.delete(agents,cnt))
-                np.insert(agents,cnt,agent)
-                if agent.check_empty(alltargets):
-                    empty.add((agent.x,agent.y))
+                agent.update()
+                agent.check_empty(alltargets)
+                    # empty.add((agent.x,agent.y))
             if flag==0:
                 flag+=1
             else:
@@ -270,7 +216,12 @@ def main():
             json.dump(starting_states,outfile,indent=2)
 
     data = pd.DataFrame(csv)
-    data.to_csv("CSV_files/csv_1.csv")
-
+    data.to_csv("CSV_files/G25_1.csv")
+    # print(data)
+    averageHap= data["I"].mean()
+    averageStd =  data["K"].mean()
+    f = open("CSV_files/G25_2.csv",'w')
+    f.write("1, %f, %f" %(averageHap,averageStd))
+    f.close()
 
 main()
