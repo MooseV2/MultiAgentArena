@@ -16,7 +16,7 @@ let competition = false
 const scale_unit = 6
 
 // Frame Rate
-const frame_rate = 5
+const frame_rate = 30
 
 // Agent vision properties
 const agent_reach = 515
