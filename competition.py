@@ -41,7 +41,7 @@ def csv_writer(iteration,agent_no,agent):
     try:
         competitive =((agent.happiness-min_happ)/(max_happ-min_happ))
     except:
-        competitive = 0
+        competitive = -1
 
     data = {"A":1,
             "B":iteration,
@@ -129,7 +129,7 @@ class Agent():
 
     def check_empty(self, alltargets,r=10):
         for cnt,target in enumerate(self.targets):
-            if hypot((target[0]-self.x),(target[1]-self.y))<r:
+            if hypot((target[0]-self.x),(target[1]-self.y))<=r:
                 del self.targets[cnt]
                 self.no_targets_collected +=1
                 return False
@@ -168,7 +168,7 @@ class Agent():
 
 def main():
 
-    iterations = 100
+    iterations = 25
     csv = []
 
     scaler = 1
@@ -209,19 +209,20 @@ def main():
                 starting_states.append(output_frontend(agents,scaler))
 
         for cnt,agent in enumerate(agents):
-            csv.append(csv_writer(iter_no+1,cnt+1,agent))
+            csv.append(csv_writer(iter_no,cnt,agent))
 
-        filename = "CSV_files/path_taken%d.txt" %(iter_no+1)
+        filename = "CSV_files/scenario_1_%d.txt" %(iter_no+1)
         with open(filename,'w') as outfile:
             json.dump(starting_states,outfile,indent=2)
 
     data = pd.DataFrame(csv)
-    data.to_csv("CSV_files/G25_1.csv")
+    data.set_index("A", inplace=True)
+    data.to_csv("scenario_1.csv",header=None)
     # print(data)
-    averageHap= data["I"].mean()
-    averageStd =  data["K"].mean()
-    f = open("CSV_files/G25_2.csv",'w')
-    f.write("1, %f, %f" %(averageHap,averageStd))
-    f.close()
+    # averageHap= data["I"].mean()
+    # averageStd =  data["K"].mean()
+    # f = open("CSV_files/G25_2.csv",'w')
+    # f.write("1, %f, %f" %(averageHap,averageStd))
+    # f.close()
 
 main()
