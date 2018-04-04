@@ -37,6 +37,7 @@ function objectSetup() {
 }
 
 function setup_positions(){
+  starting_positions_history = starting_positions
   objects = []
 
   objects[0] = new Grid(scale_unit, scale_unit)
@@ -70,19 +71,11 @@ function DOMSetup() {
 
   // Reset Button
   let Reset_Button = createSpan("Reset")
-  Reset_Button.parent('#reset').addClass("button is-danger is-medium").mousePressed(objectSetup)
-
-  // // Reset Button
-  // let Reset_Button = createA("/", "Reset")
-  // Reset_Button.parent('#reset').addClass("button is-danger is-medium")
+  Reset_Button.parent('#reset').addClass("button is-danger is-medium").mousePressed(reset)
 
   // Pause Button
   let Pause_Button = createSpan("Pause")
   Pause_Button.parent('#pause').addClass("button is-info is-medium").mousePressed(toggle_pause)
-
-  // // Test Button
-  // let Test_Button = createSpan("Test")
-  // Test_Button.parent('#server_test').addClass("button is-info is-medium").mousePressed(server_test)
 
   // Trail Button
   let Trail_Button = createSpan("Trail On")
@@ -117,10 +110,6 @@ function DOMSetup() {
   let Iterations_Span = createSpan("Iteration: " + iteration)
   Iterations_Span.parent('#iteration').addClass('is-size-4')
 
-  // Iteration Slider
-  let Iterations_Slider = createSlider(0, 100, 0, 1)
-  Iterations_Slider.parent('#iteration-slider').id('slider')
-
   // Iteration Input
   let Iterations_Input = createInput('')
   Iterations_Input.parent('#iteration-input').addClass('input').value(0)
@@ -141,7 +130,6 @@ function DOMSetup() {
     },
     "Agent_Buttons": Agent_Buttons,
     "Iterations": Iterations_Span,
-    "Slider": Iterations_Slider,
     "Iterations_Input": Iterations_Input,
     "Iterations_Button": Iterations_Submit
   });
@@ -156,10 +144,6 @@ function toggle_verbose() {
 function toggle_pause() {
   pause = pause ? false : true
   DOM_objects.Pause.html(`${pause ? "Resume" : "Pause"}`)
-  if(pause)
-    noLoop()
-  else
-    loop()
 }
 
 function toggle_trail() {
@@ -171,7 +155,17 @@ function set_iteration(){
   value = int(DOM_objects.Iterations_Input.value())
 
   DOM_objects.Iterations.html("Iteration: " + value)
-  DOM_objects.Slider.value(value)
 
   iteration = value
+}
+
+function reset(){
+  starting_positions = starting_positions_history
+}
+
+function indicator_background(color){
+  fill(color)
+  noStroke()
+  rect(scale_unit*50, scale_unit*50, agent_reach, agent_reach)
+  noFill()
 }

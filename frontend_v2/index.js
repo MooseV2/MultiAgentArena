@@ -8,8 +8,9 @@ const colours = ["#c56cf0", "#ff3838", "#ff9f1a", "#17c0eb", "#1dd1a1"]
 let verbose = true
 let pause = false
 let trail = false
-let iteration = 1
-let pickup = false;
+let iteration = 0
+let pickup = false
+let competition = false
 
 // Make sure Agents are 1 unit, Radius is 10 units, and Width/Height is 100 units
 const scale_unit = 6
@@ -21,6 +22,7 @@ const frame_rate = 5
 const agent_reach = 515
 
 let starting_positions = []
+let starting_positions_history = []
 let iterations = []
 
 function setup() {
@@ -44,6 +46,8 @@ function draw() {
     pickup = false
     setup_positions()
     iteration = 1
+    if(pause)
+    toggle_pause()
     pickup = true
   }
 
@@ -56,18 +60,22 @@ function draw() {
   noStroke()
 
   DOM_objects.Iterations.html("Iteration: " + iteration)
-  DOM_objects.Slider.value(iteration).attribute('disabled', '')
 
   for (let instance of objects) {
     if (instance)
       instance.draw()
   }
-
-  if(iterations != 0)
-    iteration++
   
-  if(iteration >= iterations.length)
-    iteration = 1
+  if(iteration == 0){
+    indicator_background(color(255, 159, 26, 75))
+  }else if(iteration >= iterations.length - 1){
+    if(!pause)
+      toggle_pause()
+    indicator_background(color(29, 209, 161, 75))
+    iteration = iterations.length - 1
+  } else if(iterations != 0 && !pause){
+    iteration++
+  }
 
   current_agent_info.display_info()
 
