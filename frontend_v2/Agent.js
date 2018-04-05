@@ -42,12 +42,12 @@ class Agent {
       ellipse(this.x, this.y, this.vision);
     }
 
-    if(this.frame_counter % 5 == 0 && trail){
-      this.vision_trail.fill(this.colour_alpha)
-      this.vision_trail.noStroke()
-      this.vision_trail.ellipseMode(CENTER)
-      this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
-      tint(255, 25)
+    if(trail){
+      // this.vision_trail.fill(this.colour_alpha)
+      // this.vision_trail.noStroke()
+      // this.vision_trail.ellipseMode(CENTER)
+      // this.vision_trail.ellipse(this.x/2, this.y/2, this.vision/2)
+      // tint(255, 25)
 
       this.vision_trail.stroke(this.colour)
       this.vision_trail.fill(this.colour)
