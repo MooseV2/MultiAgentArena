@@ -110,12 +110,12 @@ function DOMSetup() {
   let Iterations_Span = createSpan("Iteration: " + iteration)
   Iterations_Span.parent('#iteration').addClass('is-size-4')
 
-  // Iteration Input
-  let Iterations_Input = createInput('')
-  Iterations_Input.parent('#iteration-input').addClass('input').value(0)
-  // Reset Button
-  let Iterations_Submit = createSpan("Submit")
-  Iterations_Submit.parent('#iteration-submit').addClass("button is-danger is-medium").mousePressed(set_iteration)
+  // // Iteration Input
+  // let Iterations_Input = createInput('')
+  // Iterations_Input.parent('#iteration-input').addClass('input').value(0)
+  // // Reset Button
+  // let Iterations_Submit = createSpan("Submit")
+  // Iterations_Submit.parent('#iteration-submit').addClass("button is-danger is-medium").mousePressed(set_iteration)
 
   DOM_objects = Object.assign({
     "Reset" : Reset_Button,
@@ -130,8 +130,8 @@ function DOMSetup() {
     },
     "Agent_Buttons": Agent_Buttons,
     "Iterations": Iterations_Span,
-    "Iterations_Input": Iterations_Input,
-    "Iterations_Button": Iterations_Submit
+    // "Iterations_Input": Iterations_Input,
+    // "Iterations_Button": Iterations_Submit
   });
 
   current_agent_info = agents[0]
