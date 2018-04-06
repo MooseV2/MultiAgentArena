@@ -1,10 +1,7 @@
 import numpy as np
 from math import hypot, inf
-np.set_printoptions(threshold=np.inf)
-from pythonpathfinding.pathfinding.core.grid import Grid
-from pythonpathfinding.pathfinding.finder.breadth_first import BreadthFirstFinder
-from pythonpathfinding.pathfinding.core.node import Node
-from pythonpathfinding.pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.node import Node
+
 import json
 import pandas as pd
 import random
@@ -55,7 +52,6 @@ def csv_writer(iteration,agent_no,agent):
             "J":np.std(agent.happiness_array),
             "K":competitive}
     return data
-# def csv_writer_2(data):
 
 
 
@@ -74,19 +70,6 @@ class Agent():
         self.moves = [0,0]
         self.happiness_array = []
 
-    # def genrate_path(self):
-    #     matrix = np.zeros((20,20))
-    #     for target in self.targets:
-    #         matrix[target[0],target[1]] = self.target_type
-    #
-    #     my_grid = Grid(matrix=matrix)
-    #     agent = my_grid.node(self.x,self.y)
-    #     finder = BreadthFirstFinder(diagonal_movement=DiagonalMovement.never)
-    #     path, runs = finder.find_path(agent,self.target_type,my_grid)
-    #
-    #     self.path = path
-    #     print(self.path)
-    #
 
 
     def genrate_path(self):
@@ -106,16 +89,16 @@ class Agent():
         self.path = [point for point in self.path if point not in empty]
 
 
-    def check_correctness(self):
-        cnt = 0
-        for step in self.path:
-            for tar in self.targets:
-                if step.x ==tar[0] and step.y == tar[1]:
-                    cnt +=1
-        if cnt == 5:
-            print("All good")
-        else:
-            print("Problem with pathfinding path only contained ", cnt)
+    # def check_correctness(self):
+    #     cnt = 0
+    #     for step in self.path:
+    #         for tar in self.targets:
+    #             if step.x ==tar[0] and step.y == tar[1]:
+    #                 cnt +=1
+    #     if cnt == 5:
+    #         print("All good")
+    #     else:
+    #         print("Problem with pathfinding path only contained ", cnt)
 
 
     def next_moves(self):
@@ -127,7 +110,7 @@ class Agent():
         except:
             return[0,0]
 
-    def check_empty(self, alltargets,r=10):
+    def check_targets(self, alltargets,r=10):
         for cnt,target in enumerate(self.targets):
             if hypot((target[0]-self.x),(target[1]-self.y))<=r:
                 del self.targets[cnt]
@@ -201,8 +184,7 @@ def main():
 
             for cnt,agent in enumerate(agents):
                 agent.update()
-                agent.check_empty(alltargets)
-                    # empty.add((agent.x,agent.y))
+                agent.check_targets(alltargets)
             if flag==0:
                 flag+=1
             else:
@@ -211,18 +193,12 @@ def main():
         for cnt,agent in enumerate(agents):
             csv.append(csv_writer(iter_no,cnt,agent))
 
-        filename = "CSV_files/scenario_1_%d.txt" %(iter_no+1)
+        filename = "scenario_1_%d.txt" %(iter_no+1)
         with open(filename,'w') as outfile:
             json.dump(starting_states,outfile,indent=2)
 
     data = pd.DataFrame(csv)
     data.set_index("A", inplace=True)
     data.to_csv("scenario_1.csv",header=None)
-    # print(data)
-    # averageHap= data["I"].mean()
-    # averageStd =  data["K"].mean()
-    # f = open("CSV_files/G25_2.csv",'w')
-    # f.write("1, %f, %f" %(averageHap,averageStd))
-    # f.close()
 
 main()
