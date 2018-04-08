@@ -8,7 +8,7 @@ Implementation of a multi-agent system with group pathfinding objectives.
 ## Viewing Simulations
 
 1. Open ```index.html``` from ```Arena_Simulations```
-2. Drag and Drop scenerio files from ```Simulation_Files``` (See Rules for descriptions of each scenerio)
+2. Drag and Drop ```.txt``` scenerio files from ```Simulation_Files``` (See Rules for descriptions of each scenerio)
 
 ## Controls
 
