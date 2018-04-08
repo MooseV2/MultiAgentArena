@@ -2,6 +2,25 @@
 Implementation of a multi-agent system with group pathfinding objectives.
 
 
+
+# Usage
+
+## Viewing Simulations
+
+1. Open ```index.html``` from ```Arena_Simulations```
+2. Drag and Drop scenerio files from ```Simulation_Files``` (See Rules for descriptions of each scenerio)
+
+## Controls
+
+Pause: Toggle between pause and play
+
+Trail: Displays trail behind agents; Toggle
+
+Details: Displays details about agents; Radius, Id, Color HexCode (Default: ON)
+
+Reset: Resets the simulation from iteration 0
+
+
 # Rules
 
 **Environment**: a 10 m x 10 m field
