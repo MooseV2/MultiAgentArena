@@ -10,6 +10,8 @@ Implementation of a multi-agent system with group pathfinding objectives.
 1. Open ```index.html``` from ```Arena_Simulations```
 2. Drag and Drop ```.txt``` scenerio files from ```Simulation_Files``` (See Rules for descriptions of each scenerio)
 
+![Tutorial](https://github.com/MooseV2/MultiAgentArena/raw/master/run_sim.gif)
+
 ## Controls
 
 Pause: Toggle between pause and play
