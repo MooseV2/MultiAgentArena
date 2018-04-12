@@ -1,0 +1,105 @@
+<h1 id="multiagentarena">MultiAgentArena</h1>
+<p>Implementation of a multi-agent system with group pathfinding objectives.</p>
+<h1 id="usage">Usage</h1>
+<h2 id="viewing-simulations">Viewing Simulations</h2>
+<ol style="list-style-type: decimal">
+<li>Open <code>index.html</code> from <code>Arena_Simulations</code></li>
+<li>Drag and Drop <code>.txt</code> scenerio files from <code>Simulation_Files</code> (See Rules for descriptions of each scenerio)</li>
+</ol>
+<div class="figure">
+<img src="https://github.com/MooseV2/MultiAgentArena/raw/master/run_sim.gif" alt="Tutorial" />
+<p class="caption">Tutorial</p>
+</div>
+<h2 id="controls">Controls</h2>
+<p>Pause: Toggle between pause and play</p>
+<p>Trail: Displays trail behind agents; Toggle</p>
+<p>Details: Displays details about agents; Radius, Id, Color HexCode (Default: ON)</p>
+<p>Reset: Resets the simulation from iteration 0</p>
+<h1 id="rules">Rules</h1>
+<p><strong>Environment</strong>: a 10 m x 10 m field</p>
+<div class="figure">
+<img src="arena.png?raw=true" title="Arena" alt="Arena" />
+<p class="caption">Arena</p>
+</div>
+<ol style="list-style-type: decimal">
+<li><p>Environment: a 1 m x 1 m field.</p></li>
+<li><p>Five agents (A,B,C,D,E) can move up and down and left and right, one centimeter in every step.</p></li>
+<li><p>Assume the agents have unlimited power supply.</p></li>
+<li><p>For each agent, there are five targets to collect. For example for agent A the targets are TA1 to</p></li>
+</ol>
+<p>TA5.</p>
+<ol start="5" style="list-style-type: decimal">
+<li>Whenever a relevant target (for example TA3) is reachable by its related agent, the object is</li>
+</ol>
+<p>considered as collected and will disappear from the field.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>All targets and agents are randomly scattered all over the field. Agents do not have any</li>
+</ol>
+<p>information about the location of none of the targets and other agents.</p>
+<ol start="7" style="list-style-type: decimal">
+<li><p>Agents have location sensor (x,y) to locate itself.</p></li>
+<li><p>Agents have been given (x1,y1) and (x2,y2) so they can identify the border of the domain.</p></li>
+<li><p>Agents never run out of fuel.</p></li>
+<li><p>Every agent has a Radar to sense targets or other agents. The Radar can sense the type (which</p>
+<p>agent belongs to) and locate every target or agent in 10 centimeter radius. Whenever an agent</p>
+<p>locates a target (or an agent), it will receive the coordinates (x,y) of the target (or agent).</p></li>
+<li><p>A target (or agent) is reachable by an agent if it falls into its Radar range (10cm).</p></li>
+<li><p>Every agent has two communication channels: First is a public channel for broadcasting. In</p>
+<p>broadcast mode, the message sent by an agent will be received by all other agents. Second, a</p>
+<p>private channel to send private messages to a specific agent.</p></li>
+<li><p>In both channels, agents can send any type of message but a mandatory message will be sent in</p>
+<p>broadcast mode by an agent that collected its all targets.</p></li>
+<li><p>Agents avoid colliding each other. They will never remain reachable by other agents.</p></li>
+</ol>
+<h1 id="implement-the-following-scenarios">Implement the following scenarios:</h1>
+<h2 id="scenario-1-completion">Scenario 1: Completion</h2>
+<ul>
+<li>The game will be over as soon as one of the agents collects all its objects.</li>
+<li>Only public communication channel is open for all agents. The private channels are closed.</li>
+</ul>
+<h2 id="scenario-2-collaboration">Scenario 2: Collaboration</h2>
+<ul>
+<li>The game is not over until all agents collect their own target objects.</li>
+<li>Both public and private channels are open. Example of a private communication: Agent A encounters object TB1. It may or may not notify the object B the location of TB1.</li>
+</ul>
+<h2 id="scenario-3-compassionate-agents">Scenario 3: Compassionate agents</h2>
+<ul>
+<li>The game will be over as soon as one of the agents collects all its objects.</li>
+<li>Both public and private channels are open. Example of a private communication: Agent A encounters object TB1. It may or may not notify the object B the location of TB1.</li>
+</ul>
+<h1 id="deliverables">Deliverables</h1>
+<p>Deliverables:</p>
+<ol style="list-style-type: decimal">
+<li>Your simulation generates a CSV file with the following columns. The name of this CSV is: G[yourgroup number]_1.csv</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>a= Scenario number (1,2 or 3)</li>
+<li>b= Iteration number</li>
+<li>c= Agent number</li>
+<li>d= Number of collected targets by the agent</li>
+<li>e= Number of steps taken by the agent at the end of iteration</li>
+<li><p>Agent happiness: f=d/(e+1)</p></li>
+<li>g= Maximum happiness in each iteration</li>
+<li>h= Minimum happiness in each iteration</li>
+<li>i= Average happiness in each iteration</li>
+<li>j= Standard deviation of happiness in each iteration</li>
+<li><p>Agent competitiveness: k=(f-h)/(g-h)</p></li>
+</ol>
+<ol start="2" style="list-style-type: decimal">
+<li>Your simulation generates another csv file from the previous CSV with the following columns.The name of this CSV is: G[your group number]_2.csv</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>Scenario number (1,2 and 3)</li>
+<li>Average of column “i” for the iterations of same scenario</li>
+<li>Average of column “k” for the iterations of same scenario</li>
+</ol>
+<ol start="3" style="list-style-type: decimal">
+<li><p>A simple graphical interface is necessary for the simulation.</p></li>
+<li><p>We expect your simulation is capable of many iterations (10 to 100 times) with random setup.</p></li>
+<li><p>Deliverables: Two above mentioned CSV file in right format&gt; since a script will read and process</p></li>
+</ol>
+<p>the files, any other format will not be accepted and marks will be deducted. You has to send the</p>
+<p>files before your demo via blackboard messaging.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>You will present your simulation according to s schedule will be posted later.</li>
+</ol>
